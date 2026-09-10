@@ -1,0 +1,295 @@
+/**
+ * IMPORTANT: The seed data below contains OBVIOUSLY FICTIONAL PRACTICES.
+ * Do NOT use real optometry business names, addresses, phone numbers, or GOC numbers.
+ * All phone numbers use the official UK Ofcom fictional range (07700 900xxx),
+ * and emails use the reserved RFC 2606 domain example.com.
+ */
+
+import { eq } from 'drizzle-orm';
+import { db } from './index';
+import { specialities } from './schema';
+
+const INITIAL_SPECIALITIES = [
+  // --- Clinical Services & Procedures ---
+  {
+    name: 'Dry Eye Clinic',
+    slug: 'dry-eye-management',
+    category: 'service' as const,
+    groupName: 'Dry Eye & Blepharitis',
+    description: 'In-depth tear film analysis, meibomian gland evaluation, and specialized dry eye management.',
+  },
+  {
+    name: 'Blephex Treatment',
+    slug: 'blephex-treatment',
+    category: 'service' as const,
+    groupName: 'Dry Eye & Blepharitis',
+    description: 'BlephEx microblepharoxfoliation for blepharitis and meibomian gland debridement.',
+  },
+  {
+    name: 'ZEST (Zocular Eyelid System)',
+    slug: 'zest-treatment',
+    category: 'service' as const,
+    groupName: 'Dry Eye & Blepharitis',
+    description: 'Zocular Eyelid System Treatment for deep cleansing of eyelids and Demodex management.',
+  },
+  {
+    name: 'Punctal Plugs',
+    slug: 'punctal-plugs',
+    category: 'service' as const,
+    groupName: 'Dry Eye & Blepharitis',
+    description: 'Insertion of temporary collagen or permanent silicone punctal plugs for tear retention.',
+  },
+  {
+    name: 'Contact Lens Fitting & Scleral',
+    slug: 'contact-lens-fitting',
+    category: 'service' as const,
+    groupName: 'Cornea, Contact Lens & Myopia',
+    description: 'Complex contact lens fitting including scleral, orthokeratology, and post-graft corneal care.',
+  },
+  {
+    name: 'Myopia Management & Ortho-K',
+    slug: 'myopia-management',
+    category: 'service' as const,
+    groupName: 'Cornea, Contact Lens & Myopia',
+    description: 'Evidence-based myopia control interventions using Ortho-K lenses and dual-focus soft contact lenses.',
+  },
+  {
+    name: 'IP Prescriber Clinic',
+    slug: 'ip-prescriber',
+    category: 'service' as const,
+    groupName: 'Prescribing & Ocular Health',
+    description: 'Independent Prescribing optometrist clinic for ocular disease diagnosis and medicinal management.',
+  },
+  {
+    name: 'Foreign Body Removals',
+    slug: 'foreign-body-removals',
+    category: 'service' as const,
+    groupName: 'Prescribing & Ocular Health',
+    description: 'Emergency removal of corneal and conjunctival foreign bodies and rust ring debridement.',
+  },
+  {
+    name: 'Glaucoma Shared Care',
+    slug: 'glaucoma-monitoring',
+    category: 'service' as const,
+    groupName: 'Prescribing & Ocular Health',
+    description: 'Co-managed glaucoma care featuring pachymetry, visual fields, and intraocular pressure profiling.',
+  },
+  {
+    name: 'Paediatric Optometry',
+    slug: 'paediatric-optometry',
+    category: 'service' as const,
+    groupName: 'Pediatrics, Vision & Rehab',
+    description: 'Specialized eye care, binocular vision, and vision therapy for infants and children.',
+  },
+  {
+    name: 'Low Vision Rehabilitation',
+    slug: 'low-vision',
+    category: 'service' as const,
+    groupName: 'Pediatrics, Vision & Rehab',
+    description: 'Assessment and provision of specialized magnifiers, telescopic aids, and lighting for visual impairments.',
+  },
+  {
+    name: 'Colour Vision Assessment',
+    slug: 'colour-vision-assessment',
+    category: 'service' as const,
+    groupName: 'Pediatrics, Vision & Rehab',
+    description: 'Comprehensive testing for congenital and acquired colour deficiency using advanced diagnostic plates.',
+  },
+  {
+    name: 'Visual Stress Overlays',
+    slug: 'visual-stress-and-overlays',
+    category: 'service' as const,
+    groupName: 'Pediatrics, Vision & Rehab',
+    description: 'Precision tinted overlays and testing for Meares-Irlen syndrome and visual stress.',
+  },
+  {
+    name: 'Sports Vision Training',
+    slug: 'sports-vision',
+    category: 'service' as const,
+    groupName: 'Pediatrics, Vision & Rehab',
+    description: 'Dynamic visual acuity, depth perception, and reaction timing enhancement for athletes.',
+  },
+  {
+    name: 'Neuro-Optometric Rehabilitation',
+    slug: 'neuro-optometric-rehabilitation',
+    category: 'service' as const,
+    groupName: 'Pediatrics, Vision & Rehab',
+    description: 'Rehabilitative optometric therapy for patients suffering post-concussion, stroke, or TBI.',
+  },
+  {
+    name: 'Home Visits',
+    slug: 'home-visits',
+    category: 'service' as const,
+    groupName: 'Pediatrics, Vision & Rehab',
+    description: 'Domiciliary eye examinations and low vision services for housebound patients.',
+  },
+
+  // --- Specialized Diagnostic & Therapeutic Equipment ---
+  {
+    name: 'IPL (Intense Pulsed Light)',
+    slug: 'ipl-laser',
+    category: 'equipment' as const,
+    groupName: 'Dry Eye & Ocular Surface Tech',
+    description: 'Intense Pulsed Light therapy system for meibomian gland dysfunction (MGD) and ocular rosacea.',
+  },
+  {
+    name: 'Meibographer',
+    slug: 'meibographer',
+    category: 'equipment' as const,
+    groupName: 'Dry Eye & Ocular Surface Tech',
+    description: 'Infrared imaging of meibomian gland morphology for dry eye disease grading.',
+  },
+  {
+    name: 'Tear Film Interferometer',
+    slug: 'tear-film-interferometer',
+    category: 'equipment' as const,
+    groupName: 'Dry Eye & Ocular Surface Tech',
+    description: 'NIBUT and lipid layer thickness interferometric measurement.',
+  },
+  {
+    name: 'Pentacam / Corneal Tomographer',
+    slug: 'pentacam-tomographer',
+    category: 'equipment' as const,
+    groupName: 'Corneal & Anterior Segment Imaging',
+    description: 'Pentacam Scheimpflug anterior segment imaging for ectasia, keratoconus, and corneal pachymetry.',
+  },
+  {
+    name: 'Corneal Topographer',
+    slug: 'corneal-topographer',
+    category: 'equipment' as const,
+    groupName: 'Corneal & Anterior Segment Imaging',
+    description: 'Specular reflection corneal surface mapping for Ortho-K lens design and contact lens fitting.',
+  },
+  {
+    name: 'OCT Scanner (Anterior/Posterior)',
+    slug: 'oct-imaging',
+    category: 'equipment' as const,
+    groupName: 'Retinal & Glaucoma Diagnostics',
+    description: 'High-resolution Optical Coherence Tomography cross-sectional imaging of macula and optic nerve.',
+  },
+  {
+    name: 'Optomap Ultra-Widefield Imaging',
+    slug: 'optomap-imaging',
+    category: 'equipment' as const,
+    groupName: 'Retinal & Glaucoma Diagnostics',
+    description: 'Optomap 200-degree ultra-widefield retinal scanning for peripheral retinal evaluation.',
+  },
+  {
+    name: 'Humphrey Visual Field Analyzer',
+    slug: 'visual-field-analyzer',
+    category: 'equipment' as const,
+    groupName: 'Retinal & Glaucoma Diagnostics',
+    description: 'Standard automated perimetry for glaucoma visual field threshold testing.',
+  },
+  {
+    name: 'MECS / CESS / NIECS Acute Eye Clinic',
+    slug: 'mecs-acute-eye-clinic',
+    category: 'service' as const,
+    groupName: 'Prescribing & Ocular Health',
+    description: 'Accredited NHS Minor Eye Conditions Service for urgent red eye, flashers, floaters, and acute ocular pain.',
+  },
+  {
+    name: 'Gonioscopy Assessment',
+    slug: 'gonioscopy-assessment',
+    category: 'service' as const,
+    groupName: 'Prescribing & Ocular Health',
+    description: 'Direct 4-mirror irido-corneal angle evaluation for narrow-angle glaucoma assessment.',
+  },
+  {
+    name: 'Prosthetic & Cosmetic Contact Lenses',
+    slug: 'prosthetic-cosmetic-lenses',
+    category: 'service' as const,
+    groupName: 'Cornea, Contact Lens & Myopia',
+    description: 'Custom hand-painted or tinted opaque contact lenses for corneal scarring, aniridia, and ocular trauma.',
+  },
+  {
+    name: 'Orthoptic & Vision Therapy Clinic',
+    slug: 'orthoptic-vision-therapy',
+    category: 'service' as const,
+    groupName: 'Pediatrics, Vision & Rehab',
+    description: 'Structured exercises and orthoptic binocular therapy for convergence insufficiency and amblyopia.',
+  },
+  {
+    name: 'Prism & Diplopia Management',
+    slug: 'prism-diplopia-management',
+    category: 'service' as const,
+    groupName: 'Pediatrics, Vision & Rehab',
+    description: 'Fresnel and ground-in prism fitting for double vision, strabismus, and decompensated phorias.',
+  },
+  {
+    name: 'Intuitive Colorimeter',
+    slug: 'intuitive-colorimeter',
+    category: 'equipment' as const,
+    groupName: 'Specialized Assessment Tools',
+    description: 'Cerium Intuitive Colorimeter for prescribing precision tinted lenses for reading difficulties.',
+  },
+
+  // --- Specialized Diagnostic & Therapeutic Equipment ---
+  {
+    name: 'LipiFlow / Thermal Pulsation System',
+    slug: 'lipiflow-thermal-pulsation',
+    category: 'equipment' as const,
+    groupName: 'Dry Eye & Ocular Surface Tech',
+    description: 'Automated thermal pulsation system for meibomian gland evacuation and MGD treatment.',
+  },
+  {
+    name: 'TearLab / Tear Osmolarity Meter',
+    slug: 'tearlab-osmolarity',
+    category: 'equipment' as const,
+    groupName: 'Dry Eye & Ocular Surface Tech',
+    description: 'Quantitative tear film osmolarity measurement for dry eye diagnosis.',
+  },
+  {
+    name: 'InflammaDry (MMP-9 Biomarker Test)',
+    slug: 'inflammadry-test',
+    category: 'equipment' as const,
+    groupName: 'Dry Eye & Ocular Surface Tech',
+    description: 'Rapid point-of-care test for elevated MMP-9 inflammatory markers on the ocular surface.',
+  },
+  {
+    name: 'Optical Biometer / Axial Length Scanner',
+    slug: 'optical-biometer',
+    category: 'equipment' as const,
+    groupName: 'Corneal & Anterior Segment Imaging',
+    description: 'High-precision ocular axial length measurement for myopia control monitoring.',
+  },
+  {
+    name: 'iCare Tonometer / Diurnal IOP',
+    slug: 'icare-tonometer',
+    category: 'equipment' as const,
+    groupName: 'Retinal & Glaucoma Diagnostics',
+    description: 'Rebound tonometry for gentle IOP measurement without anaesthetic drops and 24-hour diurnal tracking.',
+  },
+];
+
+async function seed() {
+  console.log('Seeding specialities taxonomy (safe upsert)...');
+
+  for (const item of INITIAL_SPECIALITIES) {
+    const existing = await db
+      .select()
+      .from(specialities)
+      .where(eq(specialities.slug, item.slug));
+
+    if (existing.length === 0) {
+      await db.insert(specialities).values(item);
+    } else {
+      await db
+        .update(specialities)
+        .set({
+          name: item.name,
+          category: item.category,
+          groupName: item.groupName,
+          description: item.description,
+        })
+        .where(eq(specialities.slug, item.slug));
+    }
+  }
+
+  console.log('Specialities taxonomy seeding completed successfully.');
+}
+
+seed().catch((err) => {
+  console.error('Seeding failed:', err);
+  process.exit(1);
+});

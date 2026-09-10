@@ -1,0 +1,1 @@
+ALTER TABLE `listing_specialities` ADD `offered_by` text DEFAULT 'practice' NOT NULL;

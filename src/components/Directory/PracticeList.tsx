@@ -1,0 +1,178 @@
+'use client';
+
+import { useState } from 'react';
+import { PracticeListing } from '@/types';
+import PracticeCard from './PracticeCard';
+import { SearchX, SlidersHorizontal, RefreshCw, Bell, CheckCircle2, Loader2 } from 'lucide-react';
+
+interface PracticeListProps {
+  practices: PracticeListing[];
+  loading: boolean;
+  hoveredId: number | null;
+  onHover: (id: number | null) => void;
+  onSelect: (practice: PracticeListing) => void;
+  onResetFilters: () => void;
+  radiusMiles: number;
+  selectedSpecialitiesCount: number;
+}
+
+export default function PracticeList({
+  practices,
+  loading,
+  hoveredId,
+  onHover,
+  onSelect,
+  onResetFilters,
+  radiusMiles,
+  selectedSpecialitiesCount,
+}: PracticeListProps) {
+  const [notifyEmail, setNotifyEmail] = useState('');
+  const [notifySubmitting, setNotifySubmitting] = useState(false);
+  const [notifySuccess, setNotifySuccess] = useState(false);
+  const [notifyError, setNotifyError] = useState<string | null>(null);
+
+  const handleNotifySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setNotifyError(null);
+    setNotifySubmitting(true);
+
+    try {
+      const res = await fetch('/api/alerts/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: notifyEmail,
+          radiusMiles,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        setNotifyError(data.error || 'Failed to register alert.');
+      } else {
+        setNotifySuccess(true);
+        setNotifyEmail('');
+      }
+    } catch {
+      setNotifyError('Network error. Please try again.');
+    } finally {
+      setNotifySubmitting(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="space-y-4 py-4" aria-busy="true" aria-label="Loading optometrist listings">
+        {[1, 2, 3].map((i) => (
+          <div
+            key={i}
+            className="p-4 rounded-xl border border-slate-200 bg-white animate-pulse space-y-3"
+          >
+            <div className="h-5 bg-slate-200 rounded-md w-2/3" />
+            <div className="h-4 bg-slate-100 rounded-md w-1/2" />
+            <div className="h-12 bg-slate-100 rounded-md w-full" />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (practices.length === 0) {
+    return (
+      <div className="py-8 px-4 text-center bg-white border border-slate-200 rounded-2xl shadow-xs space-y-5">
+        <div className="w-12 h-12 rounded-full bg-amber-50 text-amber-600 border border-amber-200 flex items-center justify-center mx-auto shadow-2xs">
+          <SearchX className="w-6 h-6" />
+        </div>
+
+        <div className="max-w-sm mx-auto space-y-1">
+          <h3 className="text-base font-extrabold text-slate-900 tracking-tight">
+            Oops! No matching practitioners in this area yet.
+          </h3>
+          <p className="text-xs text-slate-600">
+            Try expanding beyond <strong>{radiusMiles} miles</strong> or get an alert when a practitioner registers!
+          </p>
+        </div>
+
+        {/* Ultra-compact "Notify Me" Card */}
+        <div className="max-w-sm mx-auto bg-teal-50/80 p-4 rounded-xl border border-teal-200 text-left space-y-2.5 shadow-2xs">
+          <div className="flex items-center gap-1.5 text-teal-950">
+            <Bell className="w-4 h-4 text-teal-700 shrink-0" />
+            <span className="text-xs font-extrabold">Get an email alert when a practitioner registers:</span>
+          </div>
+
+          {notifySuccess ? (
+            <div className="p-2.5 bg-emerald-50 border border-emerald-300 rounded-lg text-emerald-900 text-xs font-semibold flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              <span>You're on the list! We'll email you as soon as a matching practitioner registers.</span>
+            </div>
+          ) : (
+            <form onSubmit={handleNotifySubmit} className="space-y-1.5">
+              {notifyError && (
+                <div className="text-[11px] text-red-600 font-semibold">{notifyError}</div>
+              )}
+              <div className="flex items-center gap-2">
+                <input
+                  type="email"
+                  required
+                  value={notifyEmail}
+                  onChange={(e) => setNotifyEmail(e.target.value)}
+                  placeholder="Enter your email..."
+                  className="flex-1 px-3 py-2 bg-white border border-teal-300 rounded-lg text-xs text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-teal-500 shadow-2xs"
+                />
+                <button
+                  type="submit"
+                  disabled={notifySubmitting}
+                  className="px-3.5 py-2 bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs rounded-lg shadow-2xs transition-all active:scale-[0.98] cursor-pointer flex items-center gap-1.5 shrink-0"
+                >
+                  {notifySubmitting ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <>
+                      <Bell className="w-3.5 h-3.5" />
+                      <span>Notify Me</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
+
+        {/* Quick Reset Button */}
+        <div>
+          <button
+            type="button"
+            onClick={onResetFilters}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-lg transition-colors cursor-pointer"
+          >
+            <RefreshCw className="w-3.5 h-3.5" />
+            <span>Reset Search & Filters</span>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3" role="region" aria-label="Optometrist Search Results">
+      <div className="flex items-center justify-between text-xs text-slate-500 pb-1">
+        <span>
+          Showing <strong>{practices.length}</strong> approved practitioner{practices.length === 1 ? '' : 's'}
+        </span>
+        <span>Sorted by distance</span>
+      </div>
+
+      <div className="space-y-3">
+        {practices.map((practice) => (
+          <PracticeCard
+            key={practice.id}
+            practice={practice}
+            isHovered={hoveredId === practice.id}
+            onHover={onHover}
+            onSelect={onSelect}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,1 @@
+ALTER TABLE `specialities` ADD `group_name` text;

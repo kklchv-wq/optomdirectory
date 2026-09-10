@@ -1,0 +1,1 @@
+ALTER TABLE `specialities` ADD `category` text DEFAULT 'service' NOT NULL;
