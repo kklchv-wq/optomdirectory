@@ -7,7 +7,12 @@ export interface EmailPayload {
   subject: string;
   text: string;
   html?: string;
-  type: 'submission_received' | 'listing_approved' | 'listing_rejected' | 'password_reset';
+  type:
+    | 'submission_received'
+    | 'listing_approved'
+    | 'listing_rejected'
+    | 'password_reset'
+    | 'alert_subscription_confirmed';
   metadata?: Record<string, unknown>;
 }
 
