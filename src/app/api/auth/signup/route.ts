@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { users, listings } from '@/db/schema';
+import { users, listings, tagAlerts } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { hashPassword, createSession } from '@/lib/auth';
 import { z } from 'zod';
@@ -11,6 +11,7 @@ const signupSchema = z.object({
   email: z.string().email('Must be a valid email address'),
   gocNumber: z.string().trim().regex(gocNumberRegex, 'Must be a valid UK GOC number'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
+  subscribeUpdates: z.boolean().default(true).optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -28,7 +29,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { name, email, gocNumber, password } = parseResult.data;
+    const { name, email, gocNumber, password, subscribeUpdates } = parseResult.data;
     const normalizedEmail = email.trim().toLowerCase();
 
     // Check if email already exists
@@ -54,9 +55,23 @@ export async function POST(request: NextRequest) {
         passwordHash,
         name,
         gocNumber,
+        subscribeUpdates: subscribeUpdates ?? true,
         createdAt: new Date(),
       })
       .returning();
+
+    if (subscribeUpdates !== false) {
+      try {
+        await db.insert(tagAlerts).values({
+          email: normalizedEmail,
+          radiusMiles: 25,
+          specialities: 'Practitioner Updates & Newsletter',
+          createdAt: new Date(),
+        });
+      } catch {
+        // Ignore duplicate alert subscription errors
+      }
+    }
 
     // Auto-link any existing practice listing with matching email
     await db

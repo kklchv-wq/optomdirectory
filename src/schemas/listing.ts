@@ -68,6 +68,7 @@ export const listingFormSchema = z.object({
   specialityReferralType: z
     .record(z.string(), z.enum(['referral_required', 'self_referral']))
     .optional(),
+  subscribeUpdates: z.boolean().default(true).optional(),
 });
 
 export type ListingFormValues = z.infer<typeof listingFormSchema>;

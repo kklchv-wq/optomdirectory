@@ -37,6 +37,7 @@ function getSqliteInstance() {
       password_hash TEXT NOT NULL,
       name TEXT NOT NULL,
       goc_number TEXT NOT NULL,
+      subscribe_updates INTEGER NOT NULL DEFAULT 1,
       created_at INTEGER NOT NULL
     );
 
@@ -73,6 +74,7 @@ function getSqliteInstance() {
       email TEXT NOT NULL,
       website TEXT,
       description TEXT,
+      subscribe_updates INTEGER NOT NULL DEFAULT 1,
       status TEXT NOT NULL DEFAULT 'pending',
       edit_token TEXT NOT NULL UNIQUE,
       rejection_reason TEXT,

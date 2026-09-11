@@ -3,13 +3,14 @@
 import { useEffect, useState } from 'react';
 import { ListingFormValues } from '@/schemas/listing';
 import { Speciality } from '@/types';
-import { ShieldCheck, MapPin, User, Phone, Mail, Globe, CheckCircle2 } from 'lucide-react';
+import { ShieldCheck, MapPin, User, Phone, Mail, Globe, CheckCircle2, Bell } from 'lucide-react';
 
 interface Step4Props {
   formData: ListingFormValues;
+  updateFields?: (fields: Partial<ListingFormValues>) => void;
 }
 
-export default function FormStep4Review({ formData }: Step4Props) {
+export default function FormStep4Review({ formData, updateFields }: Step4Props) {
   const [specialitiesMap, setSpecialitiesMap] = useState<Record<number, Speciality>>({});
 
   useEffect(() => {
@@ -183,6 +184,29 @@ export default function FormStep4Review({ formData }: Step4Props) {
                 </div>
               );
             })}
+          </div>
+        </div>
+
+        {/* Updates & News Subscription Checkbox */}
+        <div className="border-t border-slate-200 pt-4">
+          <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-2 shadow-2xs">
+            <label className="flex items-start gap-3 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={formData.subscribeUpdates ?? true}
+                onChange={(e) => updateFields?.({ subscribeUpdates: e.target.checked })}
+                className="w-4 h-4 rounded border-slate-300 text-teal-700 focus:ring-teal-500 mt-0.5 cursor-pointer"
+              />
+              <div className="text-xs text-slate-700 space-y-0.5">
+                <span className="font-extrabold text-slate-900 block flex items-center gap-1.5">
+                  <Bell className="w-3.5 h-3.5 text-teal-700 shrink-0" />
+                  <span>App Updates & Related Projects Newsletter</span>
+                </span>
+                <p className="text-slate-600 leading-relaxed">
+                  I would like to receive news, feature updates about Optom Directory, and announcements about related optometry projects.
+                </p>
+              </div>
+            </label>
           </div>
         </div>
       </div>

@@ -13,6 +13,7 @@ export default function SignupPage() {
   const [email, setEmail] = useState('');
   const [gocNumber, setGocNumber] = useState('');
   const [password, setPassword] = useState('');
+  const [subscribeUpdates, setSubscribeUpdates] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -46,6 +47,7 @@ export default function SignupPage() {
           email: email.trim(),
           gocNumber: gocNumber.trim(),
           password,
+          subscribeUpdates,
         }),
       });
 
@@ -165,6 +167,26 @@ export default function SignupPage() {
                   className="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:outline-hidden"
                 />
               </div>
+            </div>
+
+            {/* Updates & News Subscription */}
+            <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl">
+              <label className="flex items-start gap-2.5 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={subscribeUpdates}
+                  onChange={(e) => setSubscribeUpdates(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 text-teal-700 focus:ring-teal-500 mt-0.5 cursor-pointer"
+                />
+                <div className="text-xs text-slate-700 space-y-0.5">
+                  <span className="font-bold text-slate-900 block">
+                    App Updates & Newsletter
+                  </span>
+                  <span className="text-[11px] text-slate-600 leading-relaxed block">
+                    Keep me updated about new app features, news, and related optometry projects.
+                  </span>
+                </div>
+              </label>
             </div>
 
             <button

@@ -30,6 +30,7 @@ const DEFAULT_FORM_DATA: ListingFormValues = {
   website: '',
   description: '',
   specialityIds: [],
+  subscribeUpdates: true,
 };
 
 const STEPS = [
@@ -343,7 +344,9 @@ export default function MultiStepForm({
           />
         )}
 
-        {currentStep === 3 && <FormStep4Review formData={formData} />}
+        {currentStep === 3 && (
+          <FormStep4Review formData={formData} updateFields={updateFields} />
+        )}
 
         {/* Action Buttons */}
         <div className="pt-4 border-t border-slate-200 flex items-center justify-between gap-3">

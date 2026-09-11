@@ -6,6 +6,9 @@ export const users = sqliteTable('users', {
   passwordHash: text('password_hash').notNull(),
   name: text('name').notNull(),
   gocNumber: text('goc_number').notNull(),
+  subscribeUpdates: integer('subscribe_updates', { mode: 'boolean' })
+    .notNull()
+    .default(true),
   createdAt: integer('created_at', { mode: 'timestamp' })
     .notNull()
     .$defaultFn(() => new Date()),
@@ -50,6 +53,9 @@ export const listings = sqliteTable('listings', {
   email: text('email').notNull(),
   website: text('website'),
   description: text('description'), // Verified <= 600 chars via Zod
+  subscribeUpdates: integer('subscribe_updates', { mode: 'boolean' })
+    .notNull()
+    .default(true),
   status: text('status', { enum: ['pending', 'approved', 'rejected'] })
     .notNull()
     .default('pending'),

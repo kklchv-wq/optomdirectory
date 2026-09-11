@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { listings, listingSpecialities } from '@/db/schema';
+import { listings, listingSpecialities, tagAlerts } from '@/db/schema';
 import { listingFormSchema } from '@/schemas/listing';
 import { generateSlug } from '@/lib/slug';
 import { mailer } from '@/lib/mailer';
@@ -66,12 +66,28 @@ export async function POST(request: NextRequest) {
         email: data.email,
         website: data.website || null,
         description: data.description || null,
+        subscribeUpdates: data.subscribeUpdates ?? true,
         status: 'pending',
         editToken,
         createdAt: new Date(),
         updatedAt: new Date(),
       })
       .returning();
+
+    // If practitioner opted in to updates, save email subscription into tag_alerts table
+    if (data.subscribeUpdates !== false && data.email) {
+      try {
+        await db.insert(tagAlerts).values({
+          email: data.email.toLowerCase(),
+          postcode: data.postcode,
+          radiusMiles: 25,
+          specialities: 'All updates & newsletter',
+          createdAt: new Date(),
+        });
+      } catch {
+        // Ignore duplicate alert subscription errors
+      }
+    }
 
     // Insert specialities join entries
     if (data.specialityIds.length > 0) {
