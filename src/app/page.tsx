@@ -11,8 +11,12 @@ import MobileViewToggle from '@/components/UI/MobileViewToggle';
 import { PracticeListing, Speciality, GeoLocation } from '@/types';
 import { DEFAULT_MAP_CENTER } from '@/config/map';
 
+import { INITIAL_SPECIALITIES } from '@/db/initialSpecialities';
+
 export default function HomePage() {
-  const [specialities, setSpecialities] = useState<Speciality[]>([]);
+  const [specialities, setSpecialities] = useState<Speciality[]>(
+    INITIAL_SPECIALITIES.map((s, idx) => ({ id: idx + 1, ...s, status: 'approved' }))
+  );
   const [selectedSpecialitySlugs, setSelectedSpecialitySlugs] = useState<string[]>([]);
   const [radiusMiles, setRadiusMiles] = useState<number>(25);
   const [location, setLocation] = useState<GeoLocation>({
@@ -34,7 +38,9 @@ export default function HomePage() {
         const res = await fetch('/api/specialities');
         if (res.ok) {
           const data = await res.json();
-          setSpecialities(data);
+          if (Array.isArray(data) && data.length > 0) {
+            setSpecialities(data);
+          }
         }
       } catch (err) {
         console.error('Failed to load specialities:', err);
@@ -116,13 +122,11 @@ export default function HomePage() {
       <section className="bg-white border-b border-slate-200 py-4 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto space-y-4">
           {/* Step 1: Select Services & Equipment Filters */}
-          {specialities.length > 0 && (
-            <FilterChips
-              specialities={specialities}
-              selectedSlugs={selectedSpecialitySlugs}
-              onChange={setSelectedSpecialitySlugs}
-            />
-          )}
+          <FilterChips
+            specialities={specialities}
+            selectedSlugs={selectedSpecialitySlugs}
+            onChange={setSelectedSpecialitySlugs}
+          />
 
           {/* Step 2: Set Location & Distance Radius (Ultra-Compact 1-line Strip) */}
           <div className="bg-slate-100/80 px-3 py-2 rounded-xl border border-slate-200/90 flex flex-col md:flex-row items-center gap-3">

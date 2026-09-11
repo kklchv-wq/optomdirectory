@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { specialities } from '@/db/schema';
 import { eq, or, isNull } from 'drizzle-orm';
+import { INITIAL_SPECIALITIES } from '@/db/initialSpecialities';
 
 export async function GET(request: NextRequest) {
   try {
@@ -18,12 +19,16 @@ export async function GET(request: NextRequest) {
         .where(or(eq(specialities.status, 'approved'), isNull(specialities.status)));
     }
 
+    if (!results || results.length === 0) {
+      return NextResponse.json(INITIAL_SPECIALITIES.map((s, idx) => ({ id: idx + 1, ...s, status: 'approved' })));
+    }
+
     return NextResponse.json(results);
   } catch (error) {
     console.error('Specialities API error:', error);
+    // Return initial specialities as reliable fallback
     return NextResponse.json(
-      { error: 'Failed to retrieve specialities' },
-      { status: 500 }
+      INITIAL_SPECIALITIES.map((s, idx) => ({ id: idx + 1, ...s, status: 'approved' }))
     );
   }
 }
