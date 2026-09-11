@@ -156,16 +156,24 @@ export default function HomePage() {
               mobileView === 'map' ? 'hidden lg:block' : 'block'
             }`}
           >
-            <PracticeList
-              practices={practices}
-              loading={loading}
-              hoveredId={hoveredId}
-              onHover={setHoveredId}
-              onSelect={setSelectedPractice}
-              onResetFilters={handleResetFilters}
-              radiusMiles={radiusMiles}
-              selectedSpecialitiesCount={selectedSpecialitySlugs.length}
-            />
+            {(() => {
+              const hasActiveFilters =
+                selectedSpecialitySlugs.length > 0 ||
+                location.label !== 'Aberdeen City Centre (Default)';
+              return (
+                <PracticeList
+                  practices={practices}
+                  loading={loading}
+                  hoveredId={hoveredId}
+                  onHover={setHoveredId}
+                  onSelect={setSelectedPractice}
+                  onResetFilters={handleResetFilters}
+                  radiusMiles={radiusMiles}
+                  selectedSpecialitiesCount={selectedSpecialitySlugs.length}
+                  hasActiveFilters={hasActiveFilters}
+                />
+              );
+            })()}
           </div>
 
           {/* Map Column */}

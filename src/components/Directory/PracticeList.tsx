@@ -1,9 +1,19 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { PracticeListing } from '@/types';
 import PracticeCard from './PracticeCard';
-import { SearchX, SlidersHorizontal, RefreshCw, Bell, CheckCircle2, Loader2 } from 'lucide-react';
+import {
+  SearchX,
+  RefreshCw,
+  Bell,
+  CheckCircle2,
+  Loader2,
+  Eye,
+  PlusCircle,
+  Info,
+} from 'lucide-react';
 
 interface PracticeListProps {
   practices: PracticeListing[];
@@ -14,6 +24,7 @@ interface PracticeListProps {
   onResetFilters: () => void;
   radiusMiles: number;
   selectedSpecialitiesCount: number;
+  hasActiveFilters?: boolean;
 }
 
 export default function PracticeList({
@@ -25,6 +36,7 @@ export default function PracticeList({
   onResetFilters,
   radiusMiles,
   selectedSpecialitiesCount,
+  hasActiveFilters = false,
 }: PracticeListProps) {
   const [notifyEmail, setNotifyEmail] = useState('');
   const [notifySubmitting, setNotifySubmitting] = useState(false);
@@ -77,23 +89,118 @@ export default function PracticeList({
     );
   }
 
+  // 0 Results State: Differentiate between Active Search/Filter vs Initial Page Load
   if (practices.length === 0) {
+    if (hasActiveFilters) {
+      return (
+        <div className="py-8 px-4 text-center bg-white border border-slate-200 rounded-2xl shadow-xs space-y-5">
+          <div className="w-12 h-12 rounded-full bg-amber-50 text-amber-600 border border-amber-200 flex items-center justify-center mx-auto shadow-2xs">
+            <SearchX className="w-6 h-6" />
+          </div>
+
+          <div className="max-w-sm mx-auto space-y-1">
+            <h3 className="text-base font-extrabold text-slate-900 tracking-tight">
+              No matching practitioners found for your search criteria.
+            </h3>
+            <p className="text-xs text-slate-600">
+              Try expanding your search radius beyond <strong>{radiusMiles} miles</strong> or clearing some selected filters.
+            </p>
+          </div>
+
+          {/* Ultra-compact "Notify Me" Card */}
+          <div className="max-w-sm mx-auto bg-teal-50/80 p-4 rounded-xl border border-teal-200 text-left space-y-2.5 shadow-2xs">
+            <div className="flex items-center gap-1.5 text-teal-950">
+              <Bell className="w-4 h-4 text-teal-700 shrink-0" />
+              <span className="text-xs font-extrabold">Get an email alert when a practitioner registers:</span>
+            </div>
+
+            {notifySuccess ? (
+              <div className="p-2.5 bg-emerald-50 border border-emerald-300 rounded-lg text-emerald-900 text-xs font-semibold flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>You're on the list! We'll email you as soon as a matching practitioner registers.</span>
+              </div>
+            ) : (
+              <form onSubmit={handleNotifySubmit} className="space-y-1.5">
+                {notifyError && (
+                  <div className="text-[11px] text-red-600 font-semibold">{notifyError}</div>
+                )}
+                <div className="flex items-center gap-2">
+                  <input
+                    type="email"
+                    required
+                    value={notifyEmail}
+                    onChange={(e) => setNotifyEmail(e.target.value)}
+                    placeholder="Enter your email..."
+                    className="flex-1 px-3 py-2 bg-white border border-teal-300 rounded-lg text-xs text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-teal-500 shadow-2xs"
+                  />
+                  <button
+                    type="submit"
+                    disabled={notifySubmitting}
+                    className="px-3.5 py-2 bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs rounded-lg shadow-2xs transition-all active:scale-[0.98] cursor-pointer flex items-center gap-1.5 shrink-0"
+                  >
+                    {notifySubmitting ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <>
+                        <Bell className="w-3.5 h-3.5" />
+                        <span>Notify Me</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+
+          {/* Quick Reset Button */}
+          <div>
+            <button
+              type="button"
+              onClick={onResetFilters}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-lg transition-colors cursor-pointer"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              <span>Reset Search & Filters</span>
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    // Default Initial Page Load (no search/filter criteria active yet)
     return (
-      <div className="py-8 px-4 text-center bg-white border border-slate-200 rounded-2xl shadow-xs space-y-5">
-        <div className="w-12 h-12 rounded-full bg-amber-50 text-amber-600 border border-amber-200 flex items-center justify-center mx-auto shadow-2xs">
-          <SearchX className="w-6 h-6" />
+      <div className="py-8 px-6 text-center bg-white border border-slate-200 rounded-2xl shadow-xs space-y-6">
+        <div className="w-12 h-12 rounded-full bg-teal-50 text-teal-700 border border-teal-200 flex items-center justify-center mx-auto shadow-2xs">
+          <Eye className="w-6 h-6" />
         </div>
 
-        <div className="max-w-sm mx-auto space-y-1">
-          <h3 className="text-base font-extrabold text-slate-900 tracking-tight">
-            Oops! No matching practitioners in this area yet.
+        <div className="max-w-md mx-auto space-y-2">
+          <h3 className="text-lg font-extrabold text-slate-900 tracking-tight">
+            Welcome to the UK Optometry Speciality Directory
           </h3>
-          <p className="text-xs text-slate-600">
-            Try expanding beyond <strong>{radiusMiles} miles</strong> or get an alert when a practitioner registers!
+          <p className="text-xs text-slate-600 leading-relaxed">
+            Select a clinical service or diagnostic equipment filter above, or enter your postcode to find specialized optometry practices across the UK.
           </p>
         </div>
 
-        {/* Ultra-compact "Notify Me" Card */}
+        <div className="pt-1 flex flex-col sm:flex-row items-center justify-center gap-3">
+          <Link
+            href="/submit"
+            className="inline-flex items-center gap-1.5 px-4 py-2 bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs rounded-xl shadow-2xs transition-colors"
+          >
+            <PlusCircle className="w-4 h-4" />
+            <span>Register a Practice</span>
+          </Link>
+          <Link
+            href="/about"
+            className="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-xs rounded-xl transition-colors"
+          >
+            <Info className="w-4 h-4 text-slate-600" />
+            <span>About Directory</span>
+          </Link>
+        </div>
+
+        {/* Email Alert Box */}
         <div className="max-w-sm mx-auto bg-teal-50/80 p-4 rounded-xl border border-teal-200 text-left space-y-2.5 shadow-2xs">
           <div className="flex items-center gap-1.5 text-teal-950">
             <Bell className="w-4 h-4 text-teal-700 shrink-0" />
@@ -136,18 +243,6 @@ export default function PracticeList({
               </div>
             </form>
           )}
-        </div>
-
-        {/* Quick Reset Button */}
-        <div>
-          <button
-            type="button"
-            onClick={onResetFilters}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-lg transition-colors cursor-pointer"
-          >
-            <RefreshCw className="w-3.5 h-3.5" />
-            <span>Reset Search & Filters</span>
-          </button>
         </div>
       </div>
     );
