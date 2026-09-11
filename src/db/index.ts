@@ -27,6 +27,8 @@ function getSqliteInstance() {
 
   const sqlite = new Database(resolvedPath);
   sqlite.pragma('journal_mode = WAL');
+  sqlite.pragma('busy_timeout = 10000');
+  sqlite.pragma('synchronous = NORMAL');
   sqlite.pragma('foreign_keys = ON');
 
   // Ensure all database tables exist automatically
