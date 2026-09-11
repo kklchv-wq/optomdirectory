@@ -222,24 +222,6 @@ export default function PracticeList({
 
   return (
     <div className="space-y-4" role="region" aria-label="Optometrist Search Results">
-      {/* Sleek Welcome & Active Practitioners Header */}
-      {!hasActiveFilters && (
-        <div className="bg-gradient-to-r from-teal-900 via-teal-800 to-slate-900 text-white p-5 rounded-2xl shadow-xs space-y-2">
-          <div className="flex items-center justify-between flex-wrap gap-2">
-            <h2 className="text-sm font-extrabold flex items-center gap-2 tracking-tight">
-              <Eye className="w-4 h-4 text-teal-300" />
-              <span>UK Optometry Speciality Directory</span>
-            </h2>
-            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-teal-400 text-slate-950">
-              ⚡ {practices.length} Active Practitioner{practices.length === 1 ? '' : 's'}
-            </span>
-          </div>
-          <p className="text-xs text-teal-100/90 leading-relaxed">
-            Showing all approved registered practitioners across the UK. Select a clinical service tag or enter a postcode above to refine results.
-          </p>
-        </div>
-      )}
-
       {/* Results Header Counter */}
       <div className="flex items-center justify-between text-xs text-slate-500 pb-1">
         <span>
