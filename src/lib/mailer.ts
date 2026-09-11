@@ -104,11 +104,14 @@ export class ResendMailer implements MailerService {
  */
 class DynamicMailer implements MailerService {
   async sendEmail(payload: EmailPayload): Promise<void> {
-    const apiKey = process.env.RESEND_API_KEY;
-    if (apiKey && apiKey.trim() !== '') {
+    const apiKey = (process.env.RESEND_API_KEY || '').trim();
+    if (apiKey !== '') {
+      const maskedKey = apiKey.length > 8 ? `${apiKey.slice(0, 5)}...${apiKey.slice(-3)}` : 'SET';
+      console.log(`[DynamicMailer] RESEND_API_KEY detected (${maskedKey}). Dispatching email via Resend.`);
       const resendMailer = new ResendMailer(apiKey);
       return resendMailer.sendEmail(payload);
     } else {
+      console.warn('[DynamicMailer] WARNING: RESEND_API_KEY is not set in environment variables. Falling back to local DevMailer log.');
       const devMailer = new DevMailer();
       return devMailer.sendEmail(payload);
     }
