@@ -136,7 +136,7 @@ export default function MapLibreMap({
           filter: ['has', 'point_count'],
           paint: {
             'circle-color': '#0d9488', // Teal-600
-            'circle-radius': ['step', ['get', 'point_count'], 18, 5, 24, 10, 30],
+            'circle-radius': ['step', ['get', 'point_count'], 14, 5, 18, 10, 24],
             'circle-stroke-width': 2,
             'circle-stroke-color': '#ffffff',
           },
@@ -151,7 +151,7 @@ export default function MapLibreMap({
           layout: {
             'text-field': '{point_count_abbreviated}',
             'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-            'text-size': 13,
+            'text-size': 11,
           },
           paint: {
             'text-color': '#ffffff',
@@ -174,10 +174,10 @@ export default function MapLibreMap({
             'circle-radius': [
               'case',
               ['boolean', ['feature-state', 'hover'], false],
-              12,
-              9,
+              8,
+              6,
             ],
-            'circle-stroke-width': 3,
+            'circle-stroke-width': 2,
             'circle-stroke-color': '#ffffff',
           },
         });

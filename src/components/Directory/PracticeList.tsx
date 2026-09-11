@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { PracticeListing } from '@/types';
 import PracticeCard from './PracticeCard';
@@ -13,6 +13,8 @@ import {
   Eye,
   PlusCircle,
   Info,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 
 interface PracticeListProps {
@@ -42,6 +44,19 @@ export default function PracticeList({
   const [notifySubmitting, setNotifySubmitting] = useState(false);
   const [notifySuccess, setNotifySuccess] = useState(false);
   const [notifyError, setNotifyError] = useState<string | null>(null);
+
+  // 8 Practices per page pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 8;
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [practices]);
+
+  const totalPages = Math.ceil(practices.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, practices.length);
+  const paginatedPractices = practices.slice(startIndex, endIndex);
 
   const handleNotifySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -103,7 +118,7 @@ export default function PracticeList({
               No matching practitioners found for your search criteria.
             </h3>
             <p className="text-xs text-slate-600">
-              Try expanding your search radius beyond <strong>{radiusMiles} miles</strong> or clearing some selected filters.
+              Try expanding your search radius beyond <strong>{radiusMiles >= 500 ? 'UK Wide' : `${radiusMiles} miles`}</strong> or clearing some selected filters.
             </p>
           </div>
 
@@ -249,16 +264,16 @@ export default function PracticeList({
   }
 
   return (
-    <div className="space-y-3" role="region" aria-label="Optometrist Search Results">
+    <div className="space-y-4" role="region" aria-label="Optometrist Search Results">
       <div className="flex items-center justify-between text-xs text-slate-500 pb-1">
         <span>
-          Showing <strong>{practices.length}</strong> approved practitioner{practices.length === 1 ? '' : 's'}
+          Showing <strong>{startIndex + 1}–{endIndex}</strong> of <strong>{practices.length}</strong> approved practitioner{practices.length === 1 ? '' : 's'}
         </span>
         <span>Sorted by distance</span>
       </div>
 
       <div className="space-y-3">
-        {practices.map((practice) => (
+        {paginatedPractices.map((practice) => (
           <PracticeCard
             key={practice.id}
             practice={practice}
@@ -268,6 +283,35 @@ export default function PracticeList({
           />
         ))}
       </div>
+
+      {/* Pagination Controls (8 per page) */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between pt-4 border-t border-slate-200 text-xs">
+          <button
+            type="button"
+            onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+            disabled={currentPage === 1}
+            className="inline-flex items-center gap-1 px-3.5 py-2 bg-white border border-slate-300 rounded-xl font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors shadow-2xs"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            <span>Previous</span>
+          </button>
+
+          <span className="font-semibold text-slate-600">
+            Page <strong className="text-slate-900 font-extrabold">{currentPage}</strong> of <strong className="text-slate-900 font-extrabold">{totalPages}</strong>
+          </span>
+
+          <button
+            type="button"
+            onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+            disabled={currentPage === totalPages}
+            className="inline-flex items-center gap-1 px-3.5 py-2 bg-white border border-slate-300 rounded-xl font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors shadow-2xs"
+          >
+            <span>Next</span>
+            <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
+      )}
     </div>
   );
 }

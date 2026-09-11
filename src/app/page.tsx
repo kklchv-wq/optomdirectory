@@ -18,7 +18,7 @@ export default function HomePage() {
     INITIAL_SPECIALITIES.map((s, idx) => ({ id: idx + 1, ...s, status: 'approved' }))
   );
   const [selectedSpecialitySlugs, setSelectedSpecialitySlugs] = useState<string[]>([]);
-  const [radiusMiles, setRadiusMiles] = useState<number>(25);
+  const [radiusMiles, setRadiusMiles] = useState<number>(500);
   const [location, setLocation] = useState<GeoLocation>({
     lat: DEFAULT_MAP_CENTER.lat,
     lng: DEFAULT_MAP_CENTER.lng,
@@ -88,7 +88,7 @@ export default function HomePage() {
 
   const handleResetFilters = () => {
     setSelectedSpecialitySlugs([]);
-    setRadiusMiles(25);
+    setRadiusMiles(500);
     setLocation({
       lat: DEFAULT_MAP_CENTER.lat,
       lng: DEFAULT_MAP_CENTER.lng,
