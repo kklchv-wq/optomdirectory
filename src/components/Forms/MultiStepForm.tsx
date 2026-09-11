@@ -206,21 +206,13 @@ export default function MultiStepForm({
           </p>
         </div>
 
-        <div className="bg-amber-50 p-4 rounded-xl border border-amber-200 text-left space-y-1.5 text-amber-900">
+        <div className="bg-teal-50 p-4 rounded-xl border border-teal-200 text-left space-y-1.5 text-teal-900">
           <span className="text-xs font-bold block flex items-center gap-1">
-            ⏳ Pending Admin Approval Notice:
+            ⏳ Pending Verification Notice:
           </span>
-          <p className="text-xs leading-relaxed">
-            Per the platform policy, all new practice submissions are placed in <strong>Pending</strong> status until reviewed by an admin. Once approved, your practice will appear live on the public directory map!
+          <p className="text-xs leading-relaxed text-teal-800">
+            All new practice submissions are verified by our team before being published live to ensure directory accuracy. You will receive an email notification once your listing goes live!
           </p>
-          <div className="pt-1">
-            <a
-              href="/admin"
-              className="inline-flex items-center gap-1 text-xs font-bold text-teal-800 hover:text-teal-950 underline"
-            >
-              👉 Go to Admin Approval Queue (/admin - password: admin123) to approve your listing now
-            </a>
-          </div>
         </div>
 
         <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 text-left space-y-2">
@@ -228,7 +220,7 @@ export default function MultiStepForm({
             🔑 Your Secret Edit Link:
           </span>
           <p className="text-xs text-slate-600 leading-relaxed">
-            Save this URL to edit your practice listing in the future. We have also saved this notification locally in <code className="bg-slate-200 px-1 py-0.5 rounded text-[11px]">./dev-emails/</code>.
+            Save this URL to return and edit your practice listing or update your specialized procedures at any time.
           </p>
           <div className="flex items-center gap-2">
             <input
@@ -240,7 +232,7 @@ export default function MultiStepForm({
             <button
               type="button"
               onClick={copyEditLink}
-              className="inline-flex items-center gap-1 px-3 py-1.5 bg-teal-700 hover:bg-teal-800 text-white text-xs font-semibold rounded-lg transition-colors shrink-0"
+              className="inline-flex items-center gap-1 px-3 py-1.5 bg-teal-700 hover:bg-teal-800 text-white text-xs font-semibold rounded-lg transition-colors shrink-0 cursor-pointer"
             >
               {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
               <span>{copied ? 'Copied' : 'Copy'}</span>
@@ -251,17 +243,17 @@ export default function MultiStepForm({
         <div className="pt-2 flex flex-col sm:flex-row gap-2">
           <button
             type="button"
-            onClick={() => router.push('/')}
-            className="flex-1 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-sm font-semibold rounded-xl transition-colors"
+            onClick={() => router.push('/dashboard')}
+            className="flex-1 py-2.5 bg-teal-700 hover:bg-teal-800 text-white text-sm font-bold rounded-xl transition-colors shadow-2xs cursor-pointer"
           >
-            Return to Homepage Directory
+            Go to Practitioner Portal
           </button>
           <button
             type="button"
-            onClick={() => router.push('/admin')}
-            className="flex-1 py-2.5 bg-teal-700 hover:bg-teal-800 text-white text-sm font-semibold rounded-xl transition-colors"
+            onClick={() => router.push('/')}
+            className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-sm font-bold rounded-xl border border-slate-300 transition-colors cursor-pointer"
           >
-            Open Admin Queue (/admin)
+            Return to Directory Map
           </button>
         </div>
       </div>
