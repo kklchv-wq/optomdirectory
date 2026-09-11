@@ -59,7 +59,7 @@ export default function SignupPage() {
       }
 
       // Account created & session established -> redirect to Practitioner Dashboard / Submission
-      router.push('/dashboard');
+      router.push('/dashboard?welcome=new');
       router.refresh();
     } catch {
       setError('An unexpected network error occurred. Please try again.');
