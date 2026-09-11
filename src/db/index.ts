@@ -131,24 +131,19 @@ function getSqliteInstance() {
     // Column already exists
   }
 
-  // Auto-seed initial specialities using direct execution without dangling prepared statements
+  // Auto-seed initial specialities using direct sqlite.exec without creating dangling C++ Statement objects
   try {
-    const row = sqlite.prepare('SELECT count(*) as count FROM specialities').get() as
-      | { count: number }
-      | undefined;
-    if (!row || row.count === 0) {
-      for (const item of INITIAL_SPECIALITIES) {
-        const nameEsc = item.name.replace(/'/g, "''");
-        const slugEsc = item.slug.replace(/'/g, "''");
-        const catEsc = item.category;
-        const groupEsc = item.groupName ? `'${item.groupName.replace(/'/g, "''")}'` : 'NULL';
-        const descEsc = item.description ? `'${item.description.replace(/'/g, "''")}'` : 'NULL';
+    for (const item of INITIAL_SPECIALITIES) {
+      const nameEsc = item.name.replace(/'/g, "''");
+      const slugEsc = item.slug.replace(/'/g, "''");
+      const catEsc = item.category;
+      const groupEsc = item.groupName ? `'${item.groupName.replace(/'/g, "''")}'` : 'NULL';
+      const descEsc = item.description ? `'${item.description.replace(/'/g, "''")}'` : 'NULL';
 
-        sqlite.exec(`
-          INSERT OR IGNORE INTO specialities (name, slug, category, group_name, description, status)
-          VALUES ('${nameEsc}', '${slugEsc}', '${catEsc}', ${groupEsc}, ${descEsc}, 'approved');
-        `);
-      }
+      sqlite.exec(`
+        INSERT OR IGNORE INTO specialities (name, slug, category, group_name, description, status)
+        VALUES ('${nameEsc}', '${slugEsc}', '${catEsc}', ${groupEsc}, ${descEsc}, 'approved');
+      `);
     }
   } catch (err) {
     console.error('Error auto-seeding initial specialities:', err);
