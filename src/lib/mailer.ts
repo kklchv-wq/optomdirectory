@@ -86,7 +86,7 @@ export class ResendMailer implements MailerService {
       });
 
       if (error) {
-        console.error('[ResendMailer] Error sending email via Resend:', error);
+        console.error('[ResendMailer] Error sending email via Resend:', JSON.stringify(error, null, 2));
         return;
       }
 
