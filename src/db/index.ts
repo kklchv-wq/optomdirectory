@@ -119,6 +119,18 @@ function getSqliteInstance() {
     );
   `);
 
+  // Safely ensure columns added in later schema updates exist on persistent volumes
+  try {
+    sqlite.exec(`ALTER TABLE users ADD COLUMN subscribe_updates INTEGER NOT NULL DEFAULT 1;`);
+  } catch {
+    // Column already exists
+  }
+  try {
+    sqlite.exec(`ALTER TABLE listings ADD COLUMN subscribe_updates INTEGER NOT NULL DEFAULT 1;`);
+  } catch {
+    // Column already exists
+  }
+
   // Auto-seed initial specialities using direct execution without dangling prepared statements
   try {
     const row = sqlite.prepare('SELECT count(*) as count FROM specialities').get() as
