@@ -15,6 +15,8 @@ import {
   Info,
   ChevronLeft,
   ChevronRight,
+  MapPin,
+  Building2,
 } from 'lucide-react';
 
 interface PracticeListProps {
@@ -104,7 +106,7 @@ export default function PracticeList({
     );
   }
 
-  // 0 Results State: Differentiate between Active Search/Filter vs Initial Page Load
+  // 0 Results State: Active Filter vs No Practices Registered Yet
   if (practices.length === 0) {
     if (hasActiveFilters) {
       return (
@@ -182,11 +184,11 @@ export default function PracticeList({
       );
     }
 
-    // Default Initial Page Load (no search/filter criteria active yet)
+    // Default Initial Load with 0 practices registered
     return (
       <div className="py-8 px-6 text-center bg-white border border-slate-200 rounded-2xl shadow-xs space-y-6">
         <div className="w-12 h-12 rounded-full bg-teal-50 text-teal-700 border border-teal-200 flex items-center justify-center mx-auto shadow-2xs">
-          <Eye className="w-6 h-6" />
+          <Building2 className="w-6 h-6" />
         </div>
 
         <div className="max-w-md mx-auto space-y-2">
@@ -194,7 +196,7 @@ export default function PracticeList({
             Welcome to the UK Optometry Speciality Directory
           </h3>
           <p className="text-xs text-slate-600 leading-relaxed">
-            Select a clinical service or diagnostic equipment filter above, or enter your postcode to find specialized optometry practices across the UK.
+            Be the first optometrist in your region to register your specialized procedures, equipment, and referral details.
           </p>
         </div>
 
@@ -214,57 +216,31 @@ export default function PracticeList({
             <span>About Directory</span>
           </Link>
         </div>
-
-        {/* Email Alert Box */}
-        <div className="max-w-sm mx-auto bg-teal-50/80 p-4 rounded-xl border border-teal-200 text-left space-y-2.5 shadow-2xs">
-          <div className="flex items-center gap-1.5 text-teal-950">
-            <Bell className="w-4 h-4 text-teal-700 shrink-0" />
-            <span className="text-xs font-extrabold">Get an email alert when a practitioner registers:</span>
-          </div>
-
-          {notifySuccess ? (
-            <div className="p-2.5 bg-emerald-50 border border-emerald-300 rounded-lg text-emerald-900 text-xs font-semibold flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-              <span>You're on the list! We'll email you as soon as a matching practitioner registers.</span>
-            </div>
-          ) : (
-            <form onSubmit={handleNotifySubmit} className="space-y-1.5">
-              {notifyError && (
-                <div className="text-[11px] text-red-600 font-semibold">{notifyError}</div>
-              )}
-              <div className="flex items-center gap-2">
-                <input
-                  type="email"
-                  required
-                  value={notifyEmail}
-                  onChange={(e) => setNotifyEmail(e.target.value)}
-                  placeholder="Enter your email..."
-                  className="flex-1 px-3 py-2 bg-white border border-teal-300 rounded-lg text-xs text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-teal-500 shadow-2xs"
-                />
-                <button
-                  type="submit"
-                  disabled={notifySubmitting}
-                  className="px-3.5 py-2 bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs rounded-lg shadow-2xs transition-all active:scale-[0.98] cursor-pointer flex items-center gap-1.5 shrink-0"
-                >
-                  {notifySubmitting ? (
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  ) : (
-                    <>
-                      <Bell className="w-3.5 h-3.5" />
-                      <span>Notify Me</span>
-                    </>
-                  )}
-                </button>
-              </div>
-            </form>
-          )}
-        </div>
       </div>
     );
   }
 
   return (
     <div className="space-y-4" role="region" aria-label="Optometrist Search Results">
+      {/* Sleek Welcome & Active Practitioners Header */}
+      {!hasActiveFilters && (
+        <div className="bg-gradient-to-r from-teal-900 via-teal-800 to-slate-900 text-white p-5 rounded-2xl shadow-xs space-y-2">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <h2 className="text-sm font-extrabold flex items-center gap-2 tracking-tight">
+              <Eye className="w-4 h-4 text-teal-300" />
+              <span>UK Optometry Speciality Directory</span>
+            </h2>
+            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-teal-400 text-slate-950">
+              ⚡ {practices.length} Active Practitioner{practices.length === 1 ? '' : 's'}
+            </span>
+          </div>
+          <p className="text-xs text-teal-100/90 leading-relaxed">
+            Showing all approved registered practitioners across the UK. Select a clinical service tag or enter a postcode above to refine results.
+          </p>
+        </div>
+      )}
+
+      {/* Results Header Counter */}
       <div className="flex items-center justify-between text-xs text-slate-500 pb-1">
         <span>
           Showing <strong>{startIndex + 1}–{endIndex}</strong> of <strong>{practices.length}</strong> approved practitioner{practices.length === 1 ? '' : 's'}
@@ -272,6 +248,7 @@ export default function PracticeList({
         <span>Sorted by distance</span>
       </div>
 
+      {/* Practitioner Cards (8 per page) */}
       <div className="space-y-3">
         {paginatedPractices.map((practice) => (
           <PracticeCard
