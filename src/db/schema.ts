@@ -113,6 +113,17 @@ export const contactMessages = sqliteTable('contact_messages', {
     .$defaultFn(() => new Date()),
 });
 
+export const passwordResetTokens = sqliteTable('password_reset_tokens', {
+  token: text('token').primaryKey(),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
+  createdAt: integer('created_at', { mode: 'timestamp' })
+    .notNull()
+    .$defaultFn(() => new Date()),
+});
+
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Session = typeof sessions.$inferSelect;
@@ -125,3 +136,5 @@ export type TagAlert = typeof tagAlerts.$inferSelect;
 export type NewTagAlert = typeof tagAlerts.$inferInsert;
 export type ContactMessage = typeof contactMessages.$inferSelect;
 export type NewContactMessage = typeof contactMessages.$inferInsert;
+export type PasswordResetToken = typeof passwordResetTokens.$inferSelect;
+

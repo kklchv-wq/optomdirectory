@@ -110,6 +110,13 @@ function getSqliteInstance() {
       message TEXT NOT NULL,
       created_at INTEGER NOT NULL
     );
+
+    CREATE TABLE IF NOT EXISTS password_reset_tokens (
+      token TEXT PRIMARY KEY,
+      user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      expires_at INTEGER NOT NULL,
+      created_at INTEGER NOT NULL
+    );
   `);
 
   // Auto-seed initial specialities using direct execution without dangling prepared statements
