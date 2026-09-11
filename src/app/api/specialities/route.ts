@@ -4,6 +4,9 @@ import { specialities } from '@/db/schema';
 import { eq, or, isNull } from 'drizzle-orm';
 import { INITIAL_SPECIALITIES } from '@/db/initialSpecialities';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -26,7 +29,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(results);
   } catch (error) {
     console.error('Specialities API error:', error);
-    // Return initial specialities as reliable fallback
     return NextResponse.json(
       INITIAL_SPECIALITIES.map((s, idx) => ({ id: idx + 1, ...s, status: 'approved' }))
     );

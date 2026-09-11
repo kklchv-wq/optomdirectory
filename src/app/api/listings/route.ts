@@ -4,6 +4,9 @@ import { listings, specialities, listingSpecialities } from '@/db/schema';
 import { eq, and, gte, lte, like, or } from 'drizzle-orm';
 import { calculateHaversineDistance, getBoundingBox } from '@/lib/haversine';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 // Aberdeen City Centre Fallback Coordinates
 const ABERDEEN_CITY_CENTRE = {
   lat: 57.1497,
