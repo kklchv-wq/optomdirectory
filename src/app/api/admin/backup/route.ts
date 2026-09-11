@@ -2,7 +2,7 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 import { NextRequest, NextResponse } from 'next/server';
-import { db, sqlite } from '@/db';
+import { db } from '@/db';
 import { listings, specialities, listingSpecialities, users, tagAlerts, contactMessages } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { lookupUkPostcode } from '@/lib/geocoding';
@@ -159,8 +159,13 @@ export async function POST(request: NextRequest) {
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
       const backupPath = path.join(backupDir, `sqlite-snapshot-${timestamp}.db`);
 
-      // SQLite WAL backup snapshot
-      sqlite.backup(backupPath);
+      const dbPath = process.env.DATABASE_URL || 'sqlite.db';
+      const resolvedPath = path.isAbsolute(dbPath)
+        ? dbPath
+        : path.join(process.cwd(), dbPath);
+
+      // Save database snapshot via file copy
+      fs.copyFileSync(resolvedPath, backupPath);
 
       return NextResponse.json({
         success: true,
