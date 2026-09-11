@@ -46,17 +46,20 @@ function DashboardContent() {
     async function fetchDashboard() {
       try {
         const res = await fetch('/api/auth/me');
-        if (res.ok) {
-          const data = await res.json();
-          if (!data.user) {
-            router.push('/auth/login');
-            return;
-          }
-          setUser(data.user);
-          setListing(data.listing);
+        if (!res.ok) {
+          router.push('/auth/login');
+          return;
         }
+        const data = await res.json();
+        if (!data || !data.user) {
+          router.push('/auth/login');
+          return;
+        }
+        setUser(data.user);
+        setListing(data.listing);
       } catch (err) {
         console.error('Failed to load practitioner dashboard:', err);
+        router.push('/auth/login');
       } finally {
         setLoading(false);
       }
@@ -72,7 +75,13 @@ function DashboardContent() {
     );
   }
 
-  if (!user) return null;
+  if (!user) {
+    return (
+      <main className="flex-1 max-w-4xl w-full mx-auto px-4 py-12 text-center text-slate-500 text-sm">
+        Redirecting to Practitioner Login...
+      </main>
+    );
+  }
 
   return (
     <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
