@@ -26,12 +26,19 @@ export async function POST(request: NextRequest) {
     }
 
     const normalizedEmail = parseResult.data.email.trim().toLowerCase();
+    console.log(`[forgot-password] Processing reset request for email: "${normalizedEmail}"`);
 
     // Look up user
     const existingUsers = await db
       .select()
       .from(users)
       .where(eq(users.email, normalizedEmail));
+
+    console.log(`[forgot-password] Lookup result for "${normalizedEmail}": ${existingUsers.length} user(s) found.`);
+
+    if (existingUsers.length === 0) {
+      console.warn(`[forgot-password] WARNING: No user account found in production database for "${normalizedEmail}". Skipping email send.`);
+    }
 
     // For security, always respond with a generic success message even if email is not found
     if (existingUsers.length > 0) {
