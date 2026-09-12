@@ -11,7 +11,7 @@
 @media print {
   @page {
     size: A4 portrait;
-    margin: 8mm;
+    margin: 12mm;
   }
 
   body {
@@ -22,25 +22,30 @@
     print-color-adjust: exact !important;
   }
 
-  /* Hide every direct child of body except #print-referral-slip */
-  body > *:not(#print-referral-slip) {
+  /* Hide header, navigation, footers, interactive toolbars & hidden elements */
+  header,
+  footer,
+  nav,
+  .print\:hidden {
     display: none !important;
   }
 
-  #print-referral-slip {
-    display: block !important;
-    visibility: visible !important;
-    position: relative !important;
-    left: auto !important;
-    top: auto !important;
-    width: 100% !important;
-    margin: 0 !important;
+  /* Expand main container for print layout */
+  main {
     padding: 0 !important;
-    box-sizing: border-box !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: none !important;
   }
 
-  #print-referral-slip * {
-    visibility: visible !important;
+  /* Ensure cards, badges, text are crisp for paper */
+  .shadow-sm,
+  .shadow-md,
+  .shadow-lg,
+  .shadow-xl,
+  .shadow-2xl {
+    box-shadow: none !important;
   }
 }
+
 
