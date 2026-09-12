@@ -70,16 +70,6 @@ export default function FormStep3Specialities({
     )
   ).sort();
 
-  const [openOptions, setOpenOptions] = useState<Record<number, boolean>>({});
-
-  const toggleOptionsOpen = (id: number, e?: React.MouseEvent) => {
-    if (e) e.stopPropagation();
-    setOpenOptions((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-  };
-
   const toggleSpeciality = (id: number) => {
     const currentIds = formData.specialityIds || [];
     const currentOfferedBy = formData.specialityOfferedBy || {};
@@ -94,11 +84,6 @@ export default function FormStep3Specialities({
         specialityIds: nextIds,
         specialityOfferedBy: nextOfferedBy,
         specialityReferralType: nextReferralType,
-      });
-      setOpenOptions((prev) => {
-        const next = { ...prev };
-        delete next[id];
-        return next;
       });
     } else {
       updateFields({
@@ -240,7 +225,7 @@ export default function FormStep3Specialities({
         <div>
           <strong className="font-bold">Simple Tag Selection:</strong>
           <p className="mt-0.5 text-[11px] text-teal-900 leading-relaxed">
-            Simply check the services and equipment you offer. Specifying referral access (<strong>Self-Referral</strong> vs <strong>Referral Only</strong>) is completely <strong>optional</strong> — click <strong>&quot;⚙️ Options&quot;</strong> on any tag if you wish to customize referral settings or provider scope.
+            Select any service or equipment item below to add it to your practice. Provider scope and referral buttons appear directly on checked items with standard defaults pre-selected — configuring them further is completely <strong>optional</strong>.
           </p>
         </div>
       </div>
@@ -461,73 +446,49 @@ export default function FormStep3Specialities({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {groupItems.map((spec) => {
                   const isChecked = formData.specialityIds?.includes(spec.id);
-                  const isOptionsOpen = !!openOptions[spec.id];
-                  const hasCustomReferral = formData.specialityReferralType?.[spec.id] === 'referral_required';
                   const offeredByVal = formData.specialityOfferedBy?.[spec.id] || 'personal';
                   const referralTypeVal = formData.specialityReferralType?.[spec.id] || 'self_referral';
                   return (
                     <div
                       key={spec.id}
-                      className={`p-3 rounded-xl border transition-all flex flex-col justify-between space-y-2 ${
+                      className={`p-3 rounded-xl border transition-all flex flex-col justify-between space-y-2.5 ${
                         isChecked
                           ? 'bg-teal-50/80 border-teal-500 shadow-xs ring-1 ring-teal-500'
                           : 'bg-white border-slate-200 hover:border-slate-300'
                       }`}
                     >
-                      <div className="flex items-start justify-between gap-2 select-none">
-                        <label className="cursor-pointer flex items-start gap-2.5 flex-1 min-w-0">
-                          <input
-                            type="checkbox"
-                            value={spec.id}
-                            checked={isChecked}
-                            onChange={() => toggleSpeciality(spec.id)}
-                            className="mt-0.5 h-4 w-4 rounded-md border-slate-300 text-teal-600 focus:ring-teal-500"
-                          />
-                          <div className="flex-1 min-w-0">
-                            <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5 flex-wrap">
-                              <span>{spec.name}</span>
-                              {isChecked && <CheckCircle2 className="w-3.5 h-3.5 text-teal-600 shrink-0" />}
-                              {hasCustomReferral && (
-                                <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-amber-800 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-300 shrink-0">
-                                  📩 Referral Only
-                                </span>
-                              )}
-                              {spec.status === 'pending' && (
-                                <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-800 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-300 shrink-0">
-                                  ⏳ Pending
-                                </span>
-                              )}
-                              {spec.description && (
-                                <span
-                                  title={spec.description}
-                                  className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-slate-200 text-slate-600 text-[10px] font-semibold cursor-help hover:bg-teal-600 hover:text-white transition-colors shrink-0"
-                                >
-                                  i
-                                </span>
-                              )}
-                            </span>
-                          </div>
-                        </label>
+                      <label className="cursor-pointer flex items-start gap-2.5 select-none">
+                        <input
+                          type="checkbox"
+                          value={spec.id}
+                          checked={isChecked}
+                          onChange={() => toggleSpeciality(spec.id)}
+                          className="mt-0.5 h-4 w-4 rounded-md border-slate-300 text-teal-600 focus:ring-teal-500"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5 flex-wrap">
+                            <span>{spec.name}</span>
+                            {isChecked && <CheckCircle2 className="w-3.5 h-3.5 text-teal-600 shrink-0" />}
+                            {spec.status === 'pending' && (
+                              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-800 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-300 shrink-0">
+                                ⏳ Pending
+                              </span>
+                            )}
+                            {spec.description && (
+                              <span
+                                title={spec.description}
+                                className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-slate-200 text-slate-600 text-[10px] font-semibold cursor-help hover:bg-teal-600 hover:text-white transition-colors shrink-0"
+                              >
+                                i
+                              </span>
+                            )}
+                          </span>
+                        </div>
+                      </label>
 
-                        {/* Optional options toggle button */}
-                        {isChecked && (
-                          <button
-                            type="button"
-                            onClick={(e) => toggleOptionsOpen(spec.id, e)}
-                            className={`text-[10px] font-bold px-2 py-0.5 rounded-lg border transition-all shrink-0 cursor-pointer ${
-                              isOptionsOpen || hasCustomReferral
-                                ? 'bg-teal-700 text-white border-teal-800 shadow-2xs'
-                                : 'bg-teal-100/70 hover:bg-teal-200 text-teal-900 border-teal-300'
-                            }`}
-                          >
-                            ⚙️ Options
-                          </button>
-                        )}
-                      </div>
-
-                      {/* Optional Expandable Options Toolbar when requested */}
-                      {isChecked && isOptionsOpen && (
-                        <div className="pt-2 border-t border-teal-200/60 space-y-2 text-[11px] bg-white/70 p-2 rounded-lg mt-1">
+                      {/* Provider Scope & Referral Options Toolbar directly visible when checked */}
+                      {isChecked && (
+                        <div className="pt-2 border-t border-teal-200/60 space-y-2 text-[11px] select-none">
                           {/* 1. Provider Scope */}
                           <div className="flex items-center justify-between gap-2">
                             <span className="font-semibold text-slate-700">Provider Scope:</span>
@@ -612,73 +573,49 @@ export default function FormStep3Specialities({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {groupItems.map((item) => {
                   const isChecked = formData.specialityIds?.includes(item.id);
-                  const isOptionsOpen = !!openOptions[item.id];
-                  const hasCustomReferral = formData.specialityReferralType?.[item.id] === 'referral_required';
                   const offeredByVal = formData.specialityOfferedBy?.[item.id] || 'practice';
                   const referralTypeVal = formData.specialityReferralType?.[item.id] || 'self_referral';
                   return (
                     <div
                       key={item.id}
-                      className={`p-3 rounded-xl border transition-all flex flex-col justify-between space-y-2 ${
+                      className={`p-3 rounded-xl border transition-all flex flex-col justify-between space-y-2.5 ${
                         isChecked
                           ? 'bg-indigo-50/80 border-indigo-500 shadow-xs ring-1 ring-indigo-500'
                           : 'bg-white border-slate-200 hover:border-slate-300'
                       }`}
                     >
-                      <div className="flex items-start justify-between gap-2 select-none">
-                        <label className="cursor-pointer flex items-start gap-2.5 flex-1 min-w-0">
-                          <input
-                            type="checkbox"
-                            value={item.id}
-                            checked={isChecked}
-                            onChange={() => toggleSpeciality(item.id)}
-                            className="mt-0.5 h-4 w-4 rounded-md border-slate-300 text-indigo-600 focus:ring-indigo-500"
-                          />
-                          <div className="flex-1 min-w-0">
-                            <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5 flex-wrap">
-                              <span>{item.name}</span>
-                              {isChecked && <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />}
-                              {hasCustomReferral && (
-                                <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-amber-800 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-300 shrink-0">
-                                  📩 Referral Only
-                                </span>
-                              )}
-                              {item.status === 'pending' && (
-                                <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-800 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-300 shrink-0">
-                                  ⏳ Pending
-                                </span>
-                              )}
-                              {item.description && (
-                                <span
-                                  title={item.description}
-                                  className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-slate-200 text-slate-600 text-[10px] font-semibold cursor-help hover:bg-indigo-600 hover:text-white transition-colors shrink-0"
-                                >
-                                  i
-                                </span>
-                              )}
-                            </span>
-                          </div>
-                        </label>
+                      <label className="cursor-pointer flex items-start gap-2.5 select-none">
+                        <input
+                          type="checkbox"
+                          value={item.id}
+                          checked={isChecked}
+                          onChange={() => toggleSpeciality(item.id)}
+                          className="mt-0.5 h-4 w-4 rounded-md border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5 flex-wrap">
+                            <span>{item.name}</span>
+                            {isChecked && <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />}
+                            {item.status === 'pending' && (
+                              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-800 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-300 shrink-0">
+                                ⏳ Pending
+                              </span>
+                            )}
+                            {item.description && (
+                              <span
+                                title={item.description}
+                                className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-slate-200 text-slate-600 text-[10px] font-semibold cursor-help hover:bg-indigo-600 hover:text-white transition-colors shrink-0"
+                              >
+                                i
+                              </span>
+                            )}
+                          </span>
+                        </div>
+                      </label>
 
-                        {/* Optional options toggle button */}
-                        {isChecked && (
-                          <button
-                            type="button"
-                            onClick={(e) => toggleOptionsOpen(item.id, e)}
-                            className={`text-[10px] font-bold px-2 py-0.5 rounded-lg border transition-all shrink-0 cursor-pointer ${
-                              isOptionsOpen || hasCustomReferral
-                                ? 'bg-indigo-700 text-white border-indigo-800 shadow-2xs'
-                                : 'bg-indigo-100/70 hover:bg-indigo-200 text-indigo-900 border-indigo-300'
-                            }`}
-                          >
-                            ⚙️ Options
-                          </button>
-                        )}
-                      </div>
-
-                      {/* Optional Expandable Options Toolbar when requested */}
-                      {isChecked && isOptionsOpen && (
-                        <div className="pt-2 border-t border-indigo-200/60 space-y-2 text-[11px] bg-white/70 p-2 rounded-lg mt-1">
+                      {/* Provider Scope & Referral Options Toolbar directly visible when checked */}
+                      {isChecked && (
+                        <div className="pt-2 border-t border-indigo-200/60 space-y-2 text-[11px] select-none">
                           {/* 1. Provider Scope */}
                           <div className="flex items-center justify-between gap-2">
                             <span className="font-semibold text-slate-700">Provider Scope:</span>
