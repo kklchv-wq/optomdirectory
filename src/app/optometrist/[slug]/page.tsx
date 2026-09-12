@@ -201,7 +201,7 @@ export default async function ListingDetailPage({ params }: PageProps) {
                 href={osmDirectionsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs rounded-xl shadow-xs transition-colors shrink-0"
+                className="inline-flex items-center gap-2 px-4 py-2.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs rounded-xl shadow-xs transition-colors shrink-0 print:hidden"
               >
                 <Navigation className="w-4 h-4" />
                 <span>Get Directions (OSM)</span>
@@ -366,7 +366,7 @@ export default async function ListingDetailPage({ params }: PageProps) {
               </div>
 
               {/* Location Map Overview */}
-              <div className="space-y-2">
+              <div className="space-y-2 print:hidden">
                 <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
                   Location Preview
                 </h3>

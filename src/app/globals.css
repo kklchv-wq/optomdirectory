@@ -11,7 +11,7 @@
 @media print {
   @page {
     size: A4 portrait;
-    margin: 12mm;
+    margin: 8mm 10mm;
   }
 
   body {
@@ -22,7 +22,7 @@
     print-color-adjust: exact !important;
   }
 
-  /* Hide header, navigation, footers, interactive toolbars & hidden elements */
+  /* Hide headers, navigation, footers, interactive toolbars & hidden elements */
   header,
   footer,
   nav,
@@ -38,7 +38,60 @@
     max-width: none !important;
   }
 
-  /* Ensure cards, badges, text are crisp for paper */
+  /* Condense card wrapper */
+  .bg-white {
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 12px !important;
+  }
+
+  /* Condense header banner */
+  .bg-gradient-to-r {
+    padding: 14px 18px !important;
+    background: #0f766e !important;
+    color: #ffffff !important;
+    border-radius: 12px 12px 0 0 !important;
+  }
+
+  .bg-gradient-to-r h1 {
+    font-size: 1.5rem !important;
+    line-height: 1.25 !important;
+    margin-top: 2px !important;
+    margin-bottom: 2px !important;
+  }
+
+  /* Compact content area and grid spacing */
+  .p-6,
+  .p-8,
+  .sm\:p-8 {
+    padding: 14px 18px !important;
+  }
+
+  .gap-8 {
+    gap: 16px !important;
+  }
+
+  .space-y-6 > * + * {
+    margin-top: 12px !important;
+  }
+
+  .space-y-4 > * + * {
+    margin-top: 8px !important;
+  }
+
+  .space-y-3 > * + * {
+    margin-top: 6px !important;
+  }
+
+  .space-y-2 > * + * {
+    margin-top: 4px !important;
+  }
+
+  /* Crisp text for print */
+  p, span, h2, h3, h4 {
+    color: #0f172a !important;
+  }
+
+  /* Ensure cards, badges, text are crisp for paper without heavy shadows */
   .shadow-sm,
   .shadow-md,
   .shadow-lg,
@@ -47,5 +100,6 @@
     box-shadow: none !important;
   }
 }
+
 
 
