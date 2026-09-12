@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Printer, Mail, Copy, Check, X, Send } from 'lucide-react';
+import { Printer, Mail, Copy, Check, X, Send, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import { PracticeListing, Speciality } from '@/types';
 
 interface ShareProps {
@@ -12,6 +12,11 @@ export default function ShareReferralToolbar({ practice }: ShareProps) {
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [patientEmail, setPatientEmail] = useState('');
   const [copied, setCopied] = useState(false);
+  const [emailTextCopied, setEmailTextCopied] = useState(false);
+  
+  // Email sending state
+  const [sending, setSending] = useState(false);
+  const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const handlePrint = () => {
     window.print();
@@ -46,7 +51,62 @@ View full profile online:
 ${typeof window !== 'undefined' ? window.location.href : ''}
 `;
 
+  const handleCopyEmailText = () => {
+    if (typeof window !== 'undefined') {
+      navigator.clipboard.writeText(emailBodyText);
+      setEmailTextCopied(true);
+      setTimeout(() => setEmailTextCopied(false), 2500);
+    }
+  };
+
   const mailtoUrl = `mailto:${encodeURIComponent(patientEmail)}?subject=${emailSubject}&body=${encodeURIComponent(emailBodyText)}`;
+
+  const handleSendDirectEmail = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!patientEmail || !patientEmail.includes('@')) {
+      setStatusMsg({ type: 'error', text: 'Please enter a valid email address.' });
+      return;
+    }
+
+    setSending(true);
+    setStatusMsg(null);
+
+    try {
+      const res = await fetch('/api/share/email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          patientEmail,
+          practiceName: practice.practiceName,
+          contactName: practice.contactName,
+          gocNumber: practice.gocNumber,
+          phone: practice.phone,
+          email: practice.email,
+          website: practice.website,
+          specialities: practice.specialities,
+          pageUrl: typeof window !== 'undefined' ? window.location.href : '',
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to send email.');
+      }
+
+      setStatusMsg({ type: 'success', text: `Email sent successfully to ${patientEmail}!` });
+      setTimeout(() => {
+        setShowEmailModal(false);
+        setPatientEmail('');
+        setStatusMsg(null);
+      }, 2500);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Error sending email';
+      setStatusMsg({ type: 'error', text: msg });
+    } finally {
+      setSending(false);
+    }
+  };
 
   return (
     <>
@@ -63,7 +123,10 @@ ${typeof window !== 'undefined' ? window.location.href : ''}
 
         <button
           type="button"
-          onClick={() => setShowEmailModal(true)}
+          onClick={() => {
+            setShowEmailModal(true);
+            setStatusMsg(null);
+          }}
           className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white hover:bg-slate-50 text-slate-800 font-bold text-xs rounded-xl border border-slate-300 shadow-2xs transition-all cursor-pointer"
           title="Email details to patient"
         >
@@ -114,45 +177,85 @@ ${typeof window !== 'undefined' ? window.location.href : ''}
               </button>
             </div>
 
-            <div className="space-y-3 text-xs">
+            <form onSubmit={handleSendDirectEmail} className="space-y-4 text-xs">
+              {statusMsg && (
+                <div
+                  className={`p-3 rounded-xl flex items-start gap-2 text-xs font-semibold ${
+                    statusMsg.type === 'success'
+                      ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                      : 'bg-red-50 text-red-800 border border-red-200'
+                  }`}
+                >
+                  {statusMsg.type === 'success' ? (
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                  ) : (
+                    <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+                  )}
+                  <span>{statusMsg.text}</span>
+                </div>
+              )}
+
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">
-                  Patient's Email Address (Optional):
+                <label className="block font-bold text-slate-800 mb-1">
+                  Patient's Email Address:
                 </label>
                 <input
                   type="email"
                   value={patientEmail}
                   onChange={(e) => setPatientEmail(e.target.value)}
                   placeholder="patient@example.com"
+                  required
                   className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-teal-500"
                 />
               </div>
 
               <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-slate-600 space-y-1">
-                <span className="font-bold text-slate-900 block text-[11px]">Email Summary Preview:</span>
+                <span className="font-bold text-slate-900 block text-[11px]">Included Practitioner Details:</span>
                 <p className="text-[11px]"><strong>Practitioner:</strong> {practice.contactName} ({practice.practiceName})</p>
                 <p className="text-[11px]"><strong>Phone:</strong> {practice.phone}</p>
                 <p className="text-[11px]"><strong>Address:</strong> {practice.addressLine1}, {practice.city} ({practice.postcode})</p>
+                <p className="text-[11px]"><strong>Services:</strong> {practice.specialities.length} items listed</p>
               </div>
-            </div>
 
-            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
-              <button
-                type="button"
-                onClick={() => setShowEmailModal(false)}
-                className="px-3.5 py-2 text-xs font-bold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-xl cursor-pointer"
-              >
-                Cancel
-              </button>
-              <a
-                href={mailtoUrl}
-                onClick={() => setShowEmailModal(false)}
-                className="inline-flex items-center gap-1.5 px-4 py-2 bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs rounded-xl shadow-2xs transition-all cursor-pointer"
-              >
-                <Send className="w-3.5 h-3.5" />
-                <span>Open in Email App</span>
-              </a>
-            </div>
+              <div className="flex flex-col gap-2 pt-1">
+                <button
+                  type="submit"
+                  disabled={sending}
+                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer disabled:opacity-50"
+                >
+                  {sending ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Sending Email...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4" />
+                      <span>Send Email directly to Patient</span>
+                    </>
+                  )}
+                </button>
+
+                <div className="flex items-center justify-between gap-2 pt-1 border-t border-slate-100 text-[11px]">
+                  <a
+                    href={mailtoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setShowEmailModal(false)}
+                    className="text-slate-600 hover:text-teal-700 underline font-medium"
+                  >
+                    Open in Local Mail App
+                  </a>
+                  <button
+                    type="button"
+                    onClick={handleCopyEmailText}
+                    className="text-slate-600 hover:text-teal-700 font-medium cursor-pointer"
+                  >
+                    {emailTextCopied ? 'Text Copied!' : 'Copy Email Text'}
+                  </button>
+                </div>
+              </div>
+            </form>
           </div>
         </div>
       )}
