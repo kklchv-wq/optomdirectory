@@ -466,7 +466,6 @@ export default function FormStep3Specialities({
                         <div className="flex-1 min-w-0">
                           <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5 flex-wrap">
                             <span>{spec.name}</span>
-                            {isChecked && <CheckCircle2 className="w-3.5 h-3.5 text-teal-600 shrink-0" />}
                             {spec.status === 'pending' && (
                               <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-800 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-300 shrink-0">
                                 ⏳ Pending
@@ -593,7 +592,6 @@ export default function FormStep3Specialities({
                         <div className="flex-1 min-w-0">
                           <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5 flex-wrap">
                             <span>{item.name}</span>
-                            {isChecked && <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />}
                             {item.status === 'pending' && (
                               <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-800 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-300 shrink-0">
                                 ⏳ Pending
