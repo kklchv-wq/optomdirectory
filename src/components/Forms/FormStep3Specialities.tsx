@@ -88,35 +88,33 @@ export default function FormStep3Specialities({
     } else {
       updateFields({
         specialityIds: [...currentIds, id],
-        specialityOfferedBy: {
-          ...currentOfferedBy,
-          [id]: currentOfferedBy[id] || 'personal',
-        },
-        specialityReferralType: {
-          ...currentReferralType,
-          [id]: currentReferralType[id] || 'self_referral',
-        },
       });
     }
   };
 
   const setOfferedBy = (id: number, value: 'personal' | 'practice') => {
     const currentOfferedBy = formData.specialityOfferedBy || {};
+    const nextOfferedBy = { ...currentOfferedBy };
+    if (currentOfferedBy[id] === value) {
+      delete nextOfferedBy[id];
+    } else {
+      nextOfferedBy[id] = value;
+    }
     updateFields({
-      specialityOfferedBy: {
-        ...currentOfferedBy,
-        [id]: value,
-      },
+      specialityOfferedBy: nextOfferedBy,
     });
   };
 
   const setReferralType = (id: number, value: 'referral_required' | 'self_referral') => {
     const currentReferralType = formData.specialityReferralType || {};
+    const nextReferralType = { ...currentReferralType };
+    if (currentReferralType[id] === value) {
+      delete nextReferralType[id];
+    } else {
+      nextReferralType[id] = value;
+    }
     updateFields({
-      specialityReferralType: {
-        ...currentReferralType,
-        [id]: value,
-      },
+      specialityReferralType: nextReferralType,
     });
   };
 
@@ -446,8 +444,8 @@ export default function FormStep3Specialities({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {groupItems.map((spec) => {
                   const isChecked = formData.specialityIds?.includes(spec.id);
-                  const offeredByVal = formData.specialityOfferedBy?.[spec.id] || 'personal';
-                  const referralTypeVal = formData.specialityReferralType?.[spec.id] || 'self_referral';
+                  const offeredByVal = formData.specialityOfferedBy?.[spec.id];
+                  const referralTypeVal = formData.specialityReferralType?.[spec.id];
                   return (
                     <div
                       key={spec.id}
@@ -573,8 +571,8 @@ export default function FormStep3Specialities({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {groupItems.map((item) => {
                   const isChecked = formData.specialityIds?.includes(item.id);
-                  const offeredByVal = formData.specialityOfferedBy?.[item.id] || 'practice';
-                  const referralTypeVal = formData.specialityReferralType?.[item.id] || 'self_referral';
+                  const offeredByVal = formData.specialityOfferedBy?.[item.id];
+                  const referralTypeVal = formData.specialityReferralType?.[item.id];
                   return (
                     <div
                       key={item.id}
