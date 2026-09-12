@@ -205,8 +205,8 @@ export default function FormStep3Specialities({
           <h2 className="text-base font-bold text-slate-900">
             Step 3: Select Clinical Services & Specialized Equipment
           </h2>
-          <p className="text-xs text-slate-600 mt-0.5">
-            Select procedures offered and diagnostic equipment available for your listing.
+          <p className="text-xs text-slate-600 mt-0.5 leading-relaxed">
+            Select what you're interested in and what you like doing. Help build the clinic that makes your day fulfilling. You can also select things in store you think would be helpful for us to have on the directory but you don't offer yourself as well!
           </p>
         </div>
 

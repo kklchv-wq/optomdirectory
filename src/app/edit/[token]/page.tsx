@@ -99,18 +99,7 @@ export default async function EditListingPage({ params, searchParams }: PageProp
           </p>
         </div>
 
-        {/* Informative Guidance Banner */}
-        <div className="bg-teal-50 border border-teal-200 p-4 rounded-2xl flex items-start gap-3 text-teal-950 shadow-xs max-w-2xl mx-auto">
-          <span className="text-lg shrink-0 mt-0.5">⚡</span>
-          <div className="text-xs space-y-1">
-            <span className="font-bold text-teal-900 block">
-              Instant Live Services Updates:
-            </span>
-            <p className="leading-relaxed text-teal-800">
-              Modifying your <strong>Registered Services & Equipment</strong> updates live on your profile immediately — <strong>no admin re-approval needed!</strong> Only changes to core practice details (such as GOC number, practice name, or clinic address) require admin verification.
-            </p>
-          </div>
-        </div>
+
 
         <MultiStepForm
           initialData={data.initialFormData}
