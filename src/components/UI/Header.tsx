@@ -118,7 +118,7 @@ export default function Header({ onSelectTag, selectedSlugs }: HeaderProps) {
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-teal-900 bg-teal-50 hover:bg-teal-100 border border-teal-200 rounded-xl transition-all"
                   >
                     <User className="w-4 h-4 text-teal-700" />
-                    <span>{user.name} (Portal)</span>
+                    <span>{user.name}</span>
                   </Link>
 
                   <button
