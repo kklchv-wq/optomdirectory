@@ -153,7 +153,7 @@ ${typeof window !== 'undefined' ? window.location.href : ''}
         {/* Footer */}
         <div className="pt-1 border-t border-slate-300 flex items-center justify-between text-[9px] text-slate-500">
           <span>UK Optometrist Directory • www.optomdirectory.co.uk</span>
-          <span>Verified GOC Listing Handout</span>
+          <span>Optometry Listing Handout</span>
         </div>
       </div>
 

@@ -94,7 +94,7 @@ export default function AboutPage() {
             <div className="pt-2 flex flex-wrap items-center gap-4 text-xs font-semibold text-teal-100">
               <div className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-xl border border-white/10">
                 <CheckCircle2 className="w-4 h-4 text-teal-400" />
-                <span>GOC Verified Practitioners</span>
+                <span>GOC Registered Practitioners</span>
               </div>
               <div className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-xl border border-white/10">
                 <CheckCircle2 className="w-4 h-4 text-teal-400" />
@@ -154,7 +154,7 @@ export default function AboutPage() {
               <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold">
                 <ShieldCheck className="w-5 h-5" />
               </div>
-              <h3 className="text-base font-extrabold text-slate-900">Verified GOC Listings</h3>
+              <h3 className="text-base font-extrabold text-slate-900">GOC Registered Listings</h3>
               <p className="text-xs text-slate-600 leading-relaxed">
                 Practitioners register with their General Optical Council (GOC) number and maintain their active specialities and contact details.
               </p>

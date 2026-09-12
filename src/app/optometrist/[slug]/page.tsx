@@ -142,13 +142,22 @@ export default async function ListingDetailPage({ params }: PageProps) {
 
           <div className="flex items-center gap-2 flex-wrap">
             {practice.editToken && (
-              <Link
-                href={`/edit/${practice.editToken}?step=3`}
-                className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-800 bg-white hover:bg-teal-50 hover:text-teal-900 px-3 py-1.5 rounded-lg transition-colors border border-slate-200 shadow-2xs"
-              >
-                <Edit3 className="w-3.5 h-3.5 text-teal-600" />
-                <span>Edit Services & Equipment</span>
-              </Link>
+              <>
+                <Link
+                  href={`/edit/${practice.editToken}?step=3`}
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-800 bg-white hover:bg-teal-50 hover:text-teal-900 px-3 py-1.5 rounded-lg transition-colors border border-slate-200 shadow-2xs"
+                >
+                  <Edit3 className="w-3.5 h-3.5 text-teal-600" />
+                  <span>Edit Services</span>
+                </Link>
+                <Link
+                  href={`/edit/${practice.editToken}?step=1`}
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 bg-white hover:bg-slate-100 px-3 py-1.5 rounded-lg transition-colors border border-slate-200 shadow-2xs"
+                >
+                  <Edit3 className="w-3.5 h-3.5 text-slate-500" />
+                  <span>Edit Practice</span>
+                </Link>
+              </>
             )}
             <ShareReferralToolbar practice={practice} />
           </div>
@@ -161,9 +170,6 @@ export default async function ListingDetailPage({ params }: PageProps) {
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="space-y-1.5">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-teal-500/20 text-teal-200 border border-teal-400/30">
-                    <ShieldCheck className="w-3.5 h-3.5" /> Verified Optometrist
-                  </span>
                   <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-extrabold bg-teal-400 text-slate-950">
                     GOC: {practice.gocNumber}
                   </span>
