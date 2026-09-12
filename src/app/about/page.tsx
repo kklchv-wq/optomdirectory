@@ -78,11 +78,6 @@ export default function AboutPage() {
         {/* HERO SECTION */}
         <section className="relative overflow-hidden bg-gradient-to-br from-teal-900 via-slate-900 to-teal-950 text-white rounded-3xl p-8 sm:p-12 shadow-xl border border-teal-800/40">
           <div className="relative z-10 max-w-3xl space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-teal-500/20 text-teal-200 border border-teal-400/30 backdrop-blur-xs">
-              <ShieldCheck className="w-4 h-4 text-teal-400" />
-              <span>Optometry Practitioner Network</span>
-            </div>
-
             <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight text-white">
               Connect with Optometrists Across the UK
             </h1>
@@ -166,11 +161,6 @@ export default function AboutPage() {
               <p className="text-xs sm:text-sm text-slate-600 mt-1 max-w-xl">
                 Have a question about the directory, need support with your practitioner listing, or want to suggest a new clinical speciality tag? Send us a message below.
               </p>
-            </div>
-
-            <div className="flex items-center gap-2 bg-slate-50 p-3 rounded-2xl border border-slate-200 text-xs font-semibold text-slate-700">
-              <Clock className="w-4 h-4 text-teal-600" />
-              <span>Response SLA: Within 24 hours</span>
             </div>
           </div>
 
