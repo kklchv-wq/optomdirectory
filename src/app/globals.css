@@ -22,24 +22,25 @@
     print-color-adjust: exact !important;
   }
 
-  body * {
-    visibility: hidden !important;
-  }
-
-  #print-referral-slip,
-  #print-referral-slip * {
-    visibility: visible !important;
+  /* Hide every direct child of body except #print-referral-slip */
+  body > *:not(#print-referral-slip) {
+    display: none !important;
   }
 
   #print-referral-slip {
-    position: absolute !important;
-    left: 0 !important;
-    top: 0 !important;
+    display: block !important;
+    visibility: visible !important;
+    position: relative !important;
+    left: auto !important;
+    top: auto !important;
     width: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
     box-sizing: border-box !important;
-    display: block !important;
+  }
+
+  #print-referral-slip * {
+    visibility: visible !important;
   }
 }
 
