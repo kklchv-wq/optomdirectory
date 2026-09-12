@@ -58,49 +58,45 @@ export default function Header({ onSelectTag, selectedSlugs }: HeaderProps) {
 
   return (
     <header className="sticky top-0 z-30 bg-white border-b border-slate-200 shadow-2xs">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2 sm:gap-4">
-        {/* Left: Brand Logo & Navigation Tabs */}
-        <div className="flex items-center gap-3 sm:gap-5 shrink-0">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3 sm:gap-6">
+        {/* Left: Brand Logo */}
+        <Link
+          href="/"
+          className="flex items-center gap-2.5 group focus:outline-hidden focus:ring-2 focus:ring-teal-500 rounded-md shrink-0"
+        >
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-teal-700 flex items-center justify-center text-white shadow-xs group-hover:bg-teal-800 transition-colors">
+            <Eye className="w-5 h-5 sm:w-6 sm:h-6" />
+          </div>
+          <span className="font-black text-base sm:text-lg text-slate-900 tracking-tight block leading-none">
+            Optom Directory
+          </span>
+        </Link>
+
+        {/* Integrated Navigation Links */}
+        <nav className="flex items-center gap-1 text-xs sm:text-sm">
           <Link
             href="/"
-            className="flex items-center gap-2 group focus:outline-hidden focus:ring-2 focus:ring-teal-500 rounded-md shrink-0"
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl transition-all ${
+              isDirectoryActive
+                ? 'bg-teal-50 text-teal-900 font-extrabold border border-teal-200/80 shadow-2xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 font-semibold'
+            }`}
           >
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-teal-700 flex items-center justify-center text-white shadow-xs group-hover:bg-teal-800 transition-colors">
-              <Eye className="w-5 h-5 sm:w-6 sm:h-6" />
-            </div>
-            <div>
-              <span className="font-extrabold text-base sm:text-lg text-slate-900 tracking-tight block leading-none">
-                Optom Directory
-              </span>
-            </div>
+            <Search className={`w-3.5 h-3.5 ${isDirectoryActive ? 'text-teal-700' : 'text-slate-400'}`} />
+            <span>Directory</span>
           </Link>
-
-          {/* Navigation Tabs */}
-          <nav className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs sm:text-sm">
-            <Link
-              href="/"
-              className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-lg transition-all ${
-                isDirectoryActive
-                  ? 'bg-white text-teal-900 font-extrabold shadow-2xs border border-slate-200/80'
-                  : 'text-slate-600 hover:text-slate-900 font-semibold hover:bg-slate-200/60'
-              }`}
-            >
-              <Search className="w-3.5 h-3.5 text-teal-700" />
-              <span>Directory</span>
-            </Link>
-            <Link
-              href="/about"
-              className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-lg transition-all ${
-                isAboutActive
-                  ? 'bg-white text-teal-900 font-extrabold shadow-2xs border border-slate-200/80'
-                  : 'text-slate-600 hover:text-slate-900 font-semibold hover:bg-slate-200/60'
-              }`}
-            >
-              <Info className="w-3.5 h-3.5 text-teal-700" />
-              <span>About</span>
-            </Link>
-          </nav>
-        </div>
+          <Link
+            href="/about"
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl transition-all ${
+              isAboutActive
+                ? 'bg-teal-50 text-teal-900 font-extrabold border border-teal-200/80 shadow-2xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 font-semibold'
+            }`}
+          >
+            <Info className={`w-3.5 h-3.5 ${isAboutActive ? 'text-teal-700' : 'text-slate-400'}`} />
+            <span>About</span>
+          </Link>
+        </nav>
 
         {/* Center: Search with Tag Auto-suggestions */}
         <div className="flex-1 flex justify-center max-w-xs sm:max-w-md">
