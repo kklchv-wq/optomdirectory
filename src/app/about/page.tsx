@@ -80,29 +80,29 @@ export default function AboutPage() {
           <div className="relative z-10 max-w-3xl space-y-4">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-teal-500/20 text-teal-200 border border-teal-400/30 backdrop-blur-xs">
               <ShieldCheck className="w-4 h-4 text-teal-400" />
-              <span>UK Optometrist Speciality & Equipment Directory</span>
+              <span>Optometry Practitioner Network</span>
             </div>
 
             <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight text-white">
-              Connecting Patients & Optometrists Across the UK
+              Connect with Optometrists Across the UK
             </h1>
 
-            <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
-              Optom Directory is a dedicated platform connecting patients, local optical practices, and specialized optometrists. Find clinical specialists by Independent Prescribing (IP), Glaucoma Shared Care, Myopia Management, and advanced diagnostic equipment like 3D OCT retina scanning.
+            <p className="text-teal-50 text-base sm:text-lg leading-relaxed font-medium">
+              Optom Directory is meant to help you connect to other optometrists who offer what you're looking for. If there is something you like getting involved with, add it to your profile—make it easier for others to find you and help you see more of the things that enhance your day.
             </p>
 
             <div className="pt-2 flex flex-wrap items-center gap-4 text-xs font-semibold text-teal-100">
               <div className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-xl border border-white/10">
                 <CheckCircle2 className="w-4 h-4 text-teal-400" />
-                <span>GOC Registered Practitioners</span>
+                <span>Connect with Colleagues</span>
               </div>
               <div className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-xl border border-white/10">
                 <CheckCircle2 className="w-4 h-4 text-teal-400" />
-                <span>Self & Referral-Only Options</span>
+                <span>Customise Offered Services</span>
               </div>
               <div className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-xl border border-white/10">
                 <CheckCircle2 className="w-4 h-4 text-teal-400" />
-                <span>Test-Room Print Slips</span>
+                <span>Self & Professional Referrals</span>
               </div>
             </div>
           </div>
@@ -115,18 +115,18 @@ export default function AboutPage() {
               Why Optom Directory?
             </h2>
             <p className="text-xs sm:text-sm text-slate-600">
-              Designed specifically for the UK optical sector to streamline clinical referrals and patient access.
+              Built to make practitioner discovery seamless and elevate the clinical work you love doing.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-3 hover:border-teal-300 transition-all">
               <div className="w-10 h-10 rounded-xl bg-teal-100 text-teal-700 flex items-center justify-center font-bold">
                 <Stethoscope className="w-5 h-5" />
               </div>
-              <h3 className="text-base font-extrabold text-slate-900">Specialist Clinical Services</h3>
+              <h3 className="text-base font-extrabold text-slate-900">Find Specialist Expertise</h3>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Filter optometrists by clinical expertise such as IP prescribing, glaucoma monitoring, dry eye management, and post-op care.
+                Quickly locate optometrists with specific clinical interests, Independent Prescribing (IP), dry eye clinics, or specialist contact lens skills.
               </p>
             </div>
 
@@ -134,29 +134,19 @@ export default function AboutPage() {
               <div className="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold">
                 <Microscope className="w-5 h-5" />
               </div>
-              <h3 className="text-base font-extrabold text-slate-900">Diagnostic Equipment</h3>
+              <h3 className="text-base font-extrabold text-slate-900">Add What You Enjoy</h3>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Locate practices equipped with high-spec equipment including 3D OCT scanners, visual field analyzers, and corneal topographers.
+                Highlight the clinical services and equipment you enjoy providing so nearby colleagues and patients can easily direct queries to you.
               </p>
             </div>
 
             <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-3 hover:border-teal-300 transition-all">
               <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
-                <FileText className="w-5 h-5" />
+                <Building2 className="w-5 h-5" />
               </div>
-              <h3 className="text-base font-extrabold text-slate-900">Test-Room Print Slips</h3>
+              <h3 className="text-base font-extrabold text-slate-900">Instant Live Profile Updates</h3>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Optometrists can instantly print ultra-condensed A4 clinical patient handouts with handwritten consultation note lines.
-              </p>
-            </div>
-
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-3 hover:border-teal-300 transition-all">
-              <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold">
-                <ShieldCheck className="w-5 h-5" />
-              </div>
-              <h3 className="text-base font-extrabold text-slate-900">GOC Registered Listings</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Practitioners register with their General Optical Council (GOC) number and maintain their active specialities and contact details.
+                Update the services and equipment you offer at any time without administrative delays or waiting for manual re-approval.
               </p>
             </div>
           </div>
