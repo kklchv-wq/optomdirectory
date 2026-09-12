@@ -58,6 +58,7 @@ export default function MultiStepForm({
     editUrl: string;
     message: string;
     reapprovalRequired?: boolean;
+    slug?: string;
   } | null>(null);
   const [copied, setCopied] = useState(false);
 
@@ -229,65 +230,30 @@ export default function MultiStepForm({
           </p>
         </div>
 
-        {isLiveUpdate ? (
-          <div className="bg-emerald-50 p-4 rounded-xl border border-emerald-200 text-left space-y-1 text-emerald-950">
-            <span className="text-xs font-bold block flex items-center gap-1">
-              🚀 Instant Update Confirmed:
-            </span>
-            <p className="text-xs leading-relaxed text-emerald-900">
-              Your registered services and equipment modifications are live on your public directory profile immediately. No admin re-approval was needed.
-            </p>
-          </div>
-        ) : (
-          <div className="bg-teal-50 p-4 rounded-xl border border-teal-200 text-left space-y-1.5 text-teal-900">
-            <span className="text-xs font-bold block flex items-center gap-1">
-              ⏳ Pending Verification Notice:
-            </span>
-            <p className="text-xs leading-relaxed text-teal-800">
-              All practice details changes are verified by our team before being published live to ensure directory accuracy. You will receive an email notification once approved.
-            </p>
-          </div>
-        )}
-
-        <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 text-left space-y-2">
-          <span className="text-xs font-bold text-slate-900 block">
-            🔑 Secret Listing Management Link:
-          </span>
-          <p className="text-xs text-slate-600 leading-relaxed">
-            Use this secret link to quickly adjust your services, add diagnostic equipment, or update your clinic profile at any time.
-          </p>
-          <div className="flex items-center gap-2">
-            <input
-              type="text"
-              readOnly
-              value={submittedResult.editUrl}
-              className="flex-1 px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-mono text-slate-800"
-            />
+        <div className="pt-2 flex flex-col sm:flex-row gap-3">
+          {submittedResult.slug ? (
             <button
               type="button"
-              onClick={copyEditLink}
-              className="inline-flex items-center gap-1 px-3 py-1.5 bg-teal-700 hover:bg-teal-800 text-white text-xs font-semibold rounded-lg transition-colors shrink-0 cursor-pointer"
+              onClick={() => router.push(`/optometrist/${submittedResult.slug}`)}
+              className="flex-1 py-2.5 bg-teal-700 hover:bg-teal-800 text-white text-sm font-bold rounded-xl transition-colors shadow-2xs cursor-pointer"
             >
-              {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-              <span>{copied ? 'Copied' : 'Copy'}</span>
+              View Listing Profile
             </button>
-          </div>
-        </div>
-
-        <div className="pt-2 flex flex-col sm:flex-row gap-2">
-          <button
-            type="button"
-            onClick={() => router.push('/dashboard')}
-            className="flex-1 py-2.5 bg-teal-700 hover:bg-teal-800 text-white text-sm font-bold rounded-xl transition-colors shadow-2xs cursor-pointer"
-          >
-            Go to Practitioner Portal
-          </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => router.push('/dashboard')}
+              className="flex-1 py-2.5 bg-teal-700 hover:bg-teal-800 text-white text-sm font-bold rounded-xl transition-colors shadow-2xs cursor-pointer"
+            >
+              Go to Practitioner Portal
+            </button>
+          )}
           <button
             type="button"
             onClick={() => router.push('/')}
             className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-sm font-bold rounded-xl border border-slate-300 transition-colors cursor-pointer"
           >
-            Return to Directory Map
+            Return to Directory Search
           </button>
         </div>
       </div>
