@@ -164,40 +164,9 @@ export default function AboutPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            {/* Contact Information & Support Cards */}
-            <div className="lg:col-span-5 space-y-6">
-
-
-              {/* Practitioner Callout Box */}
-              <div className="bg-gradient-to-br from-teal-900 to-slate-900 text-white p-6 rounded-2xl space-y-3">
-                <h4 className="text-sm font-extrabold flex items-center gap-2 text-teal-300">
-                  <User className="w-4 h-4" />
-                  <span>Are you an Optometrist?</span>
-                </h4>
-                <p className="text-xs text-slate-200 leading-relaxed">
-                  Join the UK directory to list your specialities, clinical services, diagnostic equipment, and accept direct referrals.
-                </p>
-                <div className="pt-1 flex flex-wrap gap-2">
-                  <Link
-                    href="/auth/signup"
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs rounded-xl transition-all"
-                  >
-                    <span>Join the Directory</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
-                  <Link
-                    href="/auth/login"
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white/10 hover:bg-white/20 text-white font-semibold text-xs rounded-xl transition-all border border-white/20"
-                  >
-                    <span>Login to Portal</span>
-                  </Link>
-                </div>
-              </div>
-            </div>
-
+          <div className="max-w-2xl mx-auto">
             {/* Interactive Contact Form */}
-            <div className="lg:col-span-7">
+            <div>
               {successMsg ? (
                 <div className="bg-emerald-50 border-2 border-emerald-300 rounded-2xl p-6 text-center space-y-3">
                   <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto">
