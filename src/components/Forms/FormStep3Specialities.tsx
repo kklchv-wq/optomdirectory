@@ -339,11 +339,11 @@ export default function FormStep3Specialities({
             {/* Custom Tag Options: Patient Access & Provider Scope (Optional) */}
             <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
               <div className="text-[11px] font-bold text-slate-600 uppercase tracking-wider">
-                Optional Referral & Scope Settings
+                Optional Referral & Provider Settings
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <span className="font-semibold text-slate-700 block mb-1">Patient Access:</span>
+                  <span className="font-semibold text-slate-700 block mb-1">Access:</span>
                   <div className="inline-flex rounded-lg bg-slate-200/70 p-0.5 font-medium">
                     <button
                       type="button"
@@ -371,7 +371,7 @@ export default function FormStep3Specialities({
                 </div>
 
                 <div>
-                  <span className="font-semibold text-slate-700 block mb-1">Provider Scope:</span>
+                  <span className="font-semibold text-slate-700 block mb-1">Provider:</span>
                   <div className="inline-flex rounded-lg bg-slate-200/70 p-0.5 font-medium">
                     <button
                       type="button"
@@ -484,12 +484,12 @@ export default function FormStep3Specialities({
                         </div>
                       </label>
 
-                      {/* Provider Scope & Referral Options Toolbar directly visible when checked */}
+                      {/* Provider & Referral Options Toolbar directly visible when checked */}
                       {isChecked && (
                         <div className="pt-2 border-t border-teal-200/60 space-y-2 text-[11px] select-none">
-                          {/* 1. Provider Scope */}
+                          {/* 1. Provider */}
                           <div className="flex items-center justify-between gap-2">
-                            <span className="font-semibold text-slate-700">Provider Scope:</span>
+                            <span className="font-semibold text-slate-700">Provider:</span>
                             <div className="inline-flex rounded-lg bg-slate-200/70 p-0.5 font-medium">
                               <button
                                 type="button"
@@ -516,9 +516,9 @@ export default function FormStep3Specialities({
                             </div>
                           </div>
 
-                          {/* 2. Patient Access / Referral Mode */}
+                          {/* 2. Access / Referral Mode */}
                           <div className="flex items-center justify-between gap-2">
-                            <span className="font-semibold text-slate-700">Patient Access:</span>
+                            <span className="font-semibold text-slate-700">Access:</span>
                             <div className="inline-flex rounded-lg bg-slate-200/70 p-0.5 font-medium">
                               <button
                                 type="button"
@@ -611,12 +611,12 @@ export default function FormStep3Specialities({
                         </div>
                       </label>
 
-                      {/* Provider Scope & Referral Options Toolbar directly visible when checked */}
+                      {/* Provider & Referral Options Toolbar directly visible when checked */}
                       {isChecked && (
                         <div className="pt-2 border-t border-indigo-200/60 space-y-2 text-[11px] select-none">
-                          {/* 1. Provider Scope */}
+                          {/* 1. Provider */}
                           <div className="flex items-center justify-between gap-2">
-                            <span className="font-semibold text-slate-700">Provider Scope:</span>
+                            <span className="font-semibold text-slate-700">Provider:</span>
                             <div className="inline-flex rounded-lg bg-slate-200/70 p-0.5 font-medium">
                               <button
                                 type="button"
@@ -643,9 +643,9 @@ export default function FormStep3Specialities({
                             </div>
                           </div>
 
-                          {/* 2. Patient Access / Referral Mode */}
+                          {/* 2. Access / Referral Mode */}
                           <div className="flex items-center justify-between gap-2">
-                            <span className="font-semibold text-slate-700">Patient Access:</span>
+                            <span className="font-semibold text-slate-700">Access:</span>
                             <div className="inline-flex rounded-lg bg-slate-200/70 p-0.5 font-medium">
                               <button
                                 type="button"
