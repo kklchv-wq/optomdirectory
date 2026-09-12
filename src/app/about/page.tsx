@@ -167,45 +167,7 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             {/* Contact Information & Support Cards */}
             <div className="lg:col-span-5 space-y-6">
-              <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 space-y-4">
-                <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider border-b border-slate-200 pb-2">
-                  Contact Information
-                </h3>
 
-                <div className="space-y-3 text-xs text-slate-700">
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-teal-100 text-teal-700 flex items-center justify-center font-bold shrink-0 mt-0.5">
-                      <Mail className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <span className="block text-[10px] font-bold text-slate-500 uppercase">Support Email</span>
-                      <a href="mailto:support@optomdirectory.co.uk" className="font-bold text-teal-800 hover:underline text-sm">
-                        support@optomdirectory.co.uk
-                      </a>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3 pt-2">
-                    <div className="w-8 h-8 rounded-lg bg-teal-100 text-teal-700 flex items-center justify-center font-bold shrink-0 mt-0.5">
-                      <MapPin className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <span className="block text-[10px] font-bold text-slate-500 uppercase">Coverage Area</span>
-                      <p className="font-semibold text-slate-900">UK Nationwide (England, Scotland, Wales, N. Ireland)</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3 pt-2">
-                    <div className="w-8 h-8 rounded-lg bg-teal-100 text-teal-700 flex items-center justify-center font-bold shrink-0 mt-0.5">
-                      <ShieldCheck className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <span className="block text-[10px] font-bold text-slate-500 uppercase">GOC Registration Enquiries</span>
-                      <p className="font-semibold text-slate-900">Verified GOC Optometrist Register Support</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
 
               {/* Practitioner Callout Box */}
               <div className="bg-gradient-to-br from-teal-900 to-slate-900 text-white p-6 rounded-2xl space-y-3">
