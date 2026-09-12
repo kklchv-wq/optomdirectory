@@ -13,6 +13,7 @@ interface MultiStepFormProps {
   initialData?: ListingFormValues;
   editToken?: string;
   isEditMode?: boolean;
+  initialStep?: number;
 }
 
 const DEFAULT_FORM_DATA: ListingFormValues = {
@@ -36,7 +37,7 @@ const DEFAULT_FORM_DATA: ListingFormValues = {
 const STEPS = [
   'Practice Info',
   'Address & Location',
-  'Specialities',
+  'Services & Equipment',
   'Review & Submit',
 ];
 
@@ -44,9 +45,10 @@ export default function MultiStepForm({
   initialData,
   editToken,
   isEditMode = false,
+  initialStep = 0,
 }: MultiStepFormProps) {
   const router = useRouter();
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(initialStep);
   const [formData, setFormData] = useState<ListingFormValues>(
     initialData || DEFAULT_FORM_DATA
   );
@@ -55,6 +57,7 @@ export default function MultiStepForm({
   const [submittedResult, setSubmittedResult] = useState<{
     editUrl: string;
     message: string;
+    reapprovalRequired?: boolean;
   } | null>(null);
   const [copied, setCopied] = useState(false);
 
@@ -116,7 +119,7 @@ export default function MultiStepForm({
 
     if (currentStep === 2) {
       if (!formData.specialityIds || formData.specialityIds.length === 0) {
-        setErrors({ specialityIds: 'Please select at least one clinical speciality.' });
+        setErrors({ specialityIds: 'Please select at least one clinical speciality or equipment item.' });
         return false;
       }
     }
@@ -132,6 +135,15 @@ export default function MultiStepForm({
 
   const handleBack = () => {
     setCurrentStep((prev) => Math.max(prev - 1, 0));
+  };
+
+  const jumpToStep = (targetStep: number) => {
+    // Allow jumping freely in edit mode or when target step is <= currentStep
+    if (isEditMode || targetStep <= currentStep) {
+      setCurrentStep(targetStep);
+    } else if (validateCurrentStep()) {
+      setCurrentStep(targetStep);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -171,9 +183,14 @@ export default function MultiStepForm({
 
       setSubmittedResult({
         editUrl: data.editUrl || `${window.location.origin}/edit/${editToken}`,
-        message: isEditMode
-          ? 'Your changes have been saved and sent for re-approval.'
-          : 'Your practice listing has been submitted for admin verification.',
+        reapprovalRequired: data.reapprovalRequired ?? true,
+        message: data.message || (
+          isEditMode
+            ? (data.reapprovalRequired === false
+                ? 'Services & equipment updated live on your listing!'
+                : 'Your practice details have been submitted for admin re-approval.')
+            : 'Your practice listing has been submitted for admin verification.'
+        ),
       });
     } catch {
       setErrors({ form: 'An unexpected network error occurred. Please try again.' });
@@ -191,36 +208,53 @@ export default function MultiStepForm({
   };
 
   if (submittedResult) {
+    const isLiveUpdate = isEditMode && submittedResult.reapprovalRequired === false;
+
     return (
       <div className="max-w-xl mx-auto bg-white p-8 rounded-2xl border border-slate-200 shadow-sm text-center space-y-5">
-        <div className="w-14 h-14 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center mx-auto">
+        <div className={`w-14 h-14 rounded-full flex items-center justify-center mx-auto ${
+          isLiveUpdate ? 'bg-emerald-100 text-emerald-700' : 'bg-teal-100 text-teal-700'
+        }`}>
           <CheckCircle2 className="w-8 h-8" />
         </div>
 
         <div className="space-y-2">
           <h2 className="text-xl font-extrabold text-slate-900">
-            {isEditMode ? 'Listing Updated Successfully!' : 'Submission Received!'}
+            {isLiveUpdate
+              ? '✨ Services & Equipment Updated Live!'
+              : (isEditMode ? 'Listing Details Updated!' : 'Submission Received!')}
           </h2>
           <p className="text-sm text-slate-600 leading-relaxed">
             {submittedResult.message}
           </p>
         </div>
 
-        <div className="bg-teal-50 p-4 rounded-xl border border-teal-200 text-left space-y-1.5 text-teal-900">
-          <span className="text-xs font-bold block flex items-center gap-1">
-            ⏳ Pending Verification Notice:
-          </span>
-          <p className="text-xs leading-relaxed text-teal-800">
-            All new practice submissions are verified by our team before being published live to ensure directory accuracy. You will receive an email notification once your listing goes live!
-          </p>
-        </div>
+        {isLiveUpdate ? (
+          <div className="bg-emerald-50 p-4 rounded-xl border border-emerald-200 text-left space-y-1 text-emerald-950">
+            <span className="text-xs font-bold block flex items-center gap-1">
+              🚀 Instant Update Confirmed:
+            </span>
+            <p className="text-xs leading-relaxed text-emerald-900">
+              Your registered services and equipment modifications are live on your public directory profile immediately. No admin re-approval was needed.
+            </p>
+          </div>
+        ) : (
+          <div className="bg-teal-50 p-4 rounded-xl border border-teal-200 text-left space-y-1.5 text-teal-900">
+            <span className="text-xs font-bold block flex items-center gap-1">
+              ⏳ Pending Verification Notice:
+            </span>
+            <p className="text-xs leading-relaxed text-teal-800">
+              All practice details changes are verified by our team before being published live to ensure directory accuracy. You will receive an email notification once approved.
+            </p>
+          </div>
+        )}
 
         <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 text-left space-y-2">
           <span className="text-xs font-bold text-slate-900 block">
-            🔑 Your Secret Edit Link:
+            🔑 Secret Listing Management Link:
           </span>
           <p className="text-xs text-slate-600 leading-relaxed">
-            Save this URL to return and edit your practice listing or update your specialized procedures at any time.
+            Use this secret link to quickly adjust your services, add diagnostic equipment, or update your clinic profile at any time.
           </p>
           <div className="flex items-center gap-2">
             <input
@@ -269,7 +303,12 @@ export default function MultiStepForm({
             const isDone = currentStep > idx;
             const isCurrent = currentStep === idx;
             return (
-              <div key={label} className="flex-1 text-center">
+              <button
+                type="button"
+                key={label}
+                onClick={() => jumpToStep(idx)}
+                className="flex-1 text-center group cursor-pointer focus:outline-none"
+              >
                 <div className="flex items-center justify-center">
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
@@ -277,20 +316,22 @@ export default function MultiStepForm({
                         ? 'bg-teal-600 text-white'
                         : isCurrent
                         ? 'bg-teal-800 text-white ring-4 ring-teal-100'
-                        : 'bg-slate-100 text-slate-500 border border-slate-200'
+                        : 'bg-slate-100 text-slate-500 border border-slate-200 group-hover:bg-teal-50'
                     }`}
                   >
                     {isDone ? <Check className="w-4 h-4" /> : idx + 1}
                   </div>
                 </div>
                 <span
-                  className={`mt-1.5 block text-[11px] font-medium truncate px-1 ${
-                    isCurrent ? 'text-teal-900 font-bold' : 'text-slate-500'
+                  className={`mt-1.5 block text-[11px] font-medium truncate px-1 transition-colors ${
+                    isCurrent
+                      ? 'text-teal-900 font-bold'
+                      : 'text-slate-500 group-hover:text-teal-700'
                   }`}
                 >
                   {label}
                 </span>
-              </div>
+              </button>
             );
           })}
         </div>
@@ -356,7 +397,7 @@ export default function MultiStepForm({
             <button
               type="button"
               onClick={handleNext}
-              className="inline-flex items-center gap-1 px-5 py-2.5 bg-teal-700 hover:bg-teal-800 text-white font-semibold text-xs rounded-xl shadow-xs transition-colors"
+              className="inline-flex items-center gap-1 px-5 py-2.5 bg-teal-700 hover:bg-teal-800 text-white font-semibold text-xs rounded-xl shadow-xs transition-colors cursor-pointer"
             >
               <span>Continue to Next Step</span>
               <ChevronRight className="w-4 h-4" />
@@ -365,14 +406,14 @@ export default function MultiStepForm({
             <button
               type="submit"
               disabled={submitting}
-              className="inline-flex items-center gap-1.5 px-6 py-2.5 bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs rounded-xl shadow-md transition-colors disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 px-6 py-2.5 bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs rounded-xl shadow-md transition-colors disabled:opacity-50 cursor-pointer"
             >
               {submitting ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
                 <CheckCircle2 className="w-4 h-4" />
               )}
-              <span>{isEditMode ? 'Save & Request Re-Approval' : 'Submit Practice Listing'}</span>
+              <span>{isEditMode ? 'Save & Update Live' : 'Submit Practice Listing'}</span>
             </button>
           )}
         </div>

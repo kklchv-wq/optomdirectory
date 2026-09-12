@@ -105,13 +105,21 @@ function DashboardContent() {
         </div>
 
         {listing ? (
-          <Link
-            href={`/edit/${listing.editToken}`}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-teal-400 hover:bg-teal-300 text-slate-950 font-bold text-xs rounded-xl shadow-xs transition-colors shrink-0"
-          >
-            <Edit3 className="w-4 h-4" />
-            <span>Edit Qualifications & Equipment</span>
-          </Link>
+          <div className="flex flex-col sm:flex-row gap-2 shrink-0">
+            <Link
+              href={`/edit/${listing.editToken}?step=3`}
+              className="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-teal-400 hover:bg-teal-300 text-slate-950 font-bold text-xs rounded-xl shadow-xs transition-colors"
+            >
+              <Edit3 className="w-3.5 h-3.5" />
+              <span>Edit Services & Equipment</span>
+            </Link>
+            <Link
+              href={`/edit/${listing.editToken}?step=1`}
+              className="inline-flex items-center justify-center gap-1 px-3 py-2 bg-slate-800/80 hover:bg-slate-800 text-teal-200 text-xs font-semibold rounded-xl border border-teal-500/30 transition-colors"
+            >
+              <span>Edit Clinic Details</span>
+            </Link>
+          </div>
         ) : (
           <Link
             href="/submit"
@@ -168,10 +176,10 @@ function DashboardContent() {
                 Registered Services & Equipment ({listing.specialities.length})
               </h3>
               <Link
-                href={`/edit/${listing.editToken}`}
-                className="text-xs font-bold text-teal-700 hover:underline flex items-center gap-1"
+                href={`/edit/${listing.editToken}?step=3`}
+                className="text-xs font-bold text-teal-700 hover:underline flex items-center gap-1 bg-teal-50 px-2.5 py-1 rounded-lg border border-teal-200"
               >
-                <Edit3 className="w-3 h-3" /> Update Options
+                <Edit3 className="w-3 h-3" /> Edit Services (Instant Update)
               </Link>
             </div>
 

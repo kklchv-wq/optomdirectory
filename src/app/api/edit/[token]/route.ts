@@ -98,7 +98,26 @@ export async function PUT(
 
     const data = parseResult.data;
 
-    // Update listing row and reset status to 'pending'
+    // Check if core practice details changed
+    const coreDetailsChanged =
+      existingListing.practiceName !== data.practiceName ||
+      existingListing.contactName !== data.contactName ||
+      existingListing.gocNumber !== data.gocNumber ||
+      existingListing.addressLine1 !== data.addressLine1 ||
+      (existingListing.addressLine2 || '') !== (data.addressLine2 || '') ||
+      existingListing.city !== data.city ||
+      existingListing.postcode !== data.postcode ||
+      existingListing.phone !== data.phone ||
+      existingListing.email !== data.email ||
+      (existingListing.website || '') !== (data.website || '') ||
+      (existingListing.description || '') !== (data.description || '');
+
+    // Only require re-approval if core practice details changed.
+    // Services & equipment changes apply immediately without admin re-approval.
+    const newStatus = coreDetailsChanged
+      ? 'pending'
+      : (existingListing.status === 'approved' ? 'approved' : existingListing.status);
+
     await db
       .update(listings)
       .set({
@@ -115,7 +134,7 @@ export async function PUT(
         email: data.email,
         website: data.website || null,
         description: data.description || null,
-        status: 'pending', // Re-approval required on edit
+        status: newStatus,
         updatedAt: new Date(),
       })
       .where(eq(listings.id, existingListing.id));
@@ -148,34 +167,37 @@ export async function PUT(
       );
     }
 
-    const origin = request.headers.get('origin') || 'http://localhost:3000';
-    const editUrl = `${origin}/edit/${token}`;
+    if (coreDetailsChanged) {
+      const origin = request.headers.get('origin') || 'http://localhost:3000';
+      const editUrl = `${origin}/edit/${token}`;
 
-    // Send local dev email
-    await mailer.sendEmail({
-      to: data.email,
-      subject: `Listing Edit Submitted for Re-Approval: ${data.practiceName}`,
-      type: 'submission_received',
-      text: `Hello ${data.contactName},
+      await mailer.sendEmail({
+        to: data.email,
+        subject: `Listing Details Submitted for Re-Approval: ${data.practiceName}`,
+        type: 'submission_received',
+        text: `Hello ${data.contactName},
 
-Your updates to your practice listing "${data.practiceName}" have been received.
+Your updates to your practice details for "${data.practiceName}" have been received.
 
-As per system policy, editing your listing has placed it back into the pending review queue for re-approval before updates go live.
+Because practice contact or GOC details were modified, your listing has been queued for admin verification before going live.
 
-You can continue to view or update your listing using your edit link:
-${editUrl}
+Edit link: ${editUrl}
 
 Best regards,
 Optom Referral Directory Team`,
-      metadata: {
-        listingId: existingListing.id,
-        editToken: token,
-      },
-    });
+        metadata: {
+          listingId: existingListing.id,
+          editToken: token,
+        },
+      });
+    }
 
     return NextResponse.json({
       success: true,
-      message: 'Listing updated successfully and queued for re-approval',
+      reapprovalRequired: coreDetailsChanged,
+      message: coreDetailsChanged
+        ? 'Practice details updated and queued for admin re-approval.'
+        : 'Services & Equipment updated instantly live on your listing!',
       listingId: existingListing.id,
     });
   } catch (error) {

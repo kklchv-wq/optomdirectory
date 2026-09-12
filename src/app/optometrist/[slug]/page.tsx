@@ -17,6 +17,7 @@ import {
   CheckCircle2,
   ShieldCheck,
   Building2,
+  Edit3,
 } from 'lucide-react';
 
 import ShareReferralToolbar from '@/components/Directory/ShareReferralToolbar';
@@ -129,7 +130,7 @@ export default async function ListingDetailPage({ params }: PageProps) {
       <Header />
 
       <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-        {/* Top Action Bar: Back Link & Test Room Share Toolbar */}
+        {/* Top Action Bar: Back Link & Edit / Share Toolbars */}
         <div className="flex flex-wrap items-center justify-between gap-3 print:hidden">
           <Link
             href="/"
@@ -139,7 +140,18 @@ export default async function ListingDetailPage({ params }: PageProps) {
             <span>Back to Directory Search</span>
           </Link>
 
-          <ShareReferralToolbar practice={practice} />
+          <div className="flex items-center gap-2 flex-wrap">
+            {practice.editToken && (
+              <Link
+                href={`/edit/${practice.editToken}?step=3`}
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-800 bg-white hover:bg-teal-50 hover:text-teal-900 px-3 py-1.5 rounded-lg transition-colors border border-slate-200 shadow-2xs"
+              >
+                <Edit3 className="w-3.5 h-3.5 text-teal-600" />
+                <span>Edit Services & Equipment</span>
+              </Link>
+            )}
+            <ShareReferralToolbar practice={practice} />
+          </div>
         </div>
 
         {/* Main Listing Card */}

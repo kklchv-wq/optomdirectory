@@ -9,6 +9,7 @@ import { ListingFormValues } from '@/schemas/listing';
 
 interface PageProps {
   params: Promise<{ token: string }>;
+  searchParams: Promise<{ step?: string; section?: string }>;
 }
 
 async function getListingByEditToken(token: string) {
@@ -24,11 +25,22 @@ async function getListingByEditToken(token: string) {
   const practice = practiceList[0];
 
   const currentSpecialities = await db
-    .select({ specialityId: listingSpecialities.specialityId })
+    .select({
+      specialityId: listingSpecialities.specialityId,
+      offeredBy: listingSpecialities.offeredBy,
+      referralType: listingSpecialities.referralType,
+    })
     .from(listingSpecialities)
     .where(eq(listingSpecialities.listingId, practice.id));
 
   const specialityIds = currentSpecialities.map((s) => s.specialityId);
+  const specialityOfferedBy: Record<number, 'personal' | 'practice'> = {};
+  const specialityReferralType: Record<number, 'referral_required' | 'self_referral'> = {};
+
+  for (const s of currentSpecialities) {
+    specialityOfferedBy[s.specialityId] = (s.offeredBy || 'personal') as 'personal' | 'practice';
+    specialityReferralType[s.specialityId] = (s.referralType || 'self_referral') as 'referral_required' | 'self_referral';
+  }
 
   const initialFormData: ListingFormValues = {
     practiceName: practice.practiceName,
@@ -45,6 +57,8 @@ async function getListingByEditToken(token: string) {
     website: practice.website || '',
     description: practice.description || '',
     specialityIds,
+    specialityOfferedBy,
+    specialityReferralType,
   };
 
   return {
@@ -53,13 +67,18 @@ async function getListingByEditToken(token: string) {
   };
 }
 
-export default async function EditListingPage({ params }: PageProps) {
+export default async function EditListingPage({ params, searchParams }: PageProps) {
   const resolvedParams = await params;
+  const resolvedSearchParams = await searchParams;
   const data = await getListingByEditToken(resolvedParams.token);
 
   if (!data) {
     notFound();
   }
+
+  const stepParam = (resolvedSearchParams.step || resolvedSearchParams.section || '').toLowerCase();
+  const startOnServices = stepParam === '3' || stepParam === 'services' || stepParam === 'equipment' || stepParam === 'specialities';
+  const initialStep = startOnServices ? 2 : 0;
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
@@ -71,22 +90,24 @@ export default async function EditListingPage({ params }: PageProps) {
             <Edit3 className="w-6 h-6" />
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-            Edit Practice Listing: {data.practice.practiceName}
+            {startOnServices ? 'Update Registered Services & Equipment' : `Edit Practice Listing: ${data.practice.practiceName}`}
           </h1>
           <p className="text-xs sm:text-sm text-slate-600">
-            Update your clinic contact details, address, specialities, or profile description below.
+            {startOnServices
+              ? 'Select or update the clinical services, diagnostic tools, and equipment offered at your practice.'
+              : 'Update your clinic contact details, address, specialities, or profile description below.'}
           </p>
         </div>
 
-        {/* Clear Banner warning re-approval */}
-        <div className="bg-amber-50 border border-amber-200 p-4 rounded-2xl flex items-start gap-3 text-amber-900 shadow-xs max-w-2xl mx-auto">
-          <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+        {/* Informative Guidance Banner */}
+        <div className="bg-teal-50 border border-teal-200 p-4 rounded-2xl flex items-start gap-3 text-teal-950 shadow-xs max-w-2xl mx-auto">
+          <span className="text-lg shrink-0 mt-0.5">⚡</span>
           <div className="text-xs space-y-1">
-            <span className="font-bold text-amber-950 block">
-              Notice: Editing Requires Admin Re-Approval
+            <span className="font-bold text-teal-900 block">
+              Instant Live Services Updates:
             </span>
-            <p className="leading-relaxed">
-              Saving updates to your listing will temporarily set its status back to <strong>pending</strong>. Your listing will re-enter the review queue and require admin verification before edits go live on the public directory.
+            <p className="leading-relaxed text-teal-800">
+              Modifying your <strong>Registered Services & Equipment</strong> updates live on your profile immediately — <strong>no admin re-approval needed!</strong> Only changes to core practice details (such as GOC number, practice name, or clinic address) require admin verification.
             </p>
           </div>
         </div>
@@ -95,6 +116,7 @@ export default async function EditListingPage({ params }: PageProps) {
           initialData={data.initialFormData}
           editToken={resolvedParams.token}
           isEditMode={true}
+          initialStep={initialStep}
         />
       </main>
     </div>
