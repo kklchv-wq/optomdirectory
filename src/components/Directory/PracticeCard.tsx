@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { PracticeListing } from '@/types';
-import { MapPin, Phone, ExternalLink, ChevronRight, User, Building2 } from 'lucide-react';
+import { MapPin, ChevronRight, Building2 } from 'lucide-react';
 
 interface PracticeCardProps {
   practice: PracticeListing;
@@ -30,14 +30,9 @@ export default function PracticeCard({
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <h3 className="text-base font-extrabold text-slate-900 truncate group-hover:text-teal-700">
-              {practice.contactName}
-            </h3>
-            <span className="inline-flex items-center text-[10px] font-extrabold text-teal-900 bg-teal-100/80 border border-teal-300 px-1.5 py-0.2 rounded-md shrink-0">
-              GOC: {practice.gocNumber}
-            </span>
-          </div>
+          <h3 className="text-base font-extrabold text-slate-900 truncate group-hover:text-teal-700">
+            {practice.contactName}
+          </h3>
 
           <div className="mt-1 flex items-center gap-1.5 text-xs font-semibold text-slate-700">
             <Building2 className="w-3.5 h-3.5 text-teal-600 shrink-0" />
@@ -102,14 +97,7 @@ export default function PracticeCard({
         </div>
       )}
 
-      <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-        <div className="flex items-center gap-3 text-slate-600">
-          <span className="inline-flex items-center gap-1">
-            <Phone className="w-3 h-3 text-slate-400" />
-            {practice.phone}
-          </span>
-        </div>
-
+      <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-end text-xs">
         <Link
           href={`/optometrist/${practice.slug}`}
           onClick={(e) => e.stopPropagation()}
