@@ -63,10 +63,10 @@ export const listingFormSchema = z.object({
     .array(z.number())
     .min(1, 'Please select at least one speciality'),
   specialityOfferedBy: z
-    .record(z.string(), z.enum(['personal', 'practice']))
+    .record(z.string(), z.enum(['personal', 'practice']).nullable().optional())
     .optional(),
   specialityReferralType: z
-    .record(z.string(), z.enum(['referral_required', 'self_referral']))
+    .record(z.string(), z.enum(['referral_required', 'self_referral']).nullable().optional())
     .optional(),
   workingDays: z.array(z.string()).optional(),
   subscribeUpdates: z.boolean().default(true).optional(),

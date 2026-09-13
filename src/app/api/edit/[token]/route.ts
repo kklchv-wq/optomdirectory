@@ -114,55 +114,60 @@ export async function PUT(
       ? 'pending'
       : (existingListing.status === 'approved' ? 'approved' : existingListing.status);
 
-    await db
-      .update(listings)
-      .set({
-        practiceName: data.practiceName,
-        contactName: data.contactName,
-        gocNumber: data.gocNumber,
-        addressLine1: data.addressLine1,
-        addressLine2: data.addressLine2 || null,
-        city: data.city,
-        postcode: data.postcode,
-        latitude: data.latitude,
-        longitude: data.longitude,
-        phone: data.phone,
-        email: data.email,
-        website: data.website || null,
-        description: data.description || null,
-        workingDays: data.workingDays && data.workingDays.length > 0 ? JSON.stringify(data.workingDays) : null,
-        status: newStatus,
-        updatedAt: new Date(),
-      })
-      .where(eq(listings.id, existingListing.id));
-
-    // Clear old specialities and re-insert updated specialities
-    await db
-      .delete(listingSpecialities)
-      .where(eq(listingSpecialities.listingId, existingListing.id));
-
-    if (data.specialityIds.length > 0) {
-      await db.insert(listingSpecialities).values(
-        data.specialityIds.map((specId) => {
-          const specKey = specId.toString();
-          const offeredBy =
-            data.specialityOfferedBy?.[specKey] ||
-            (data.specialityOfferedBy as Record<number, string>)?.[specId] ||
-            null;
-          const referralType =
-            data.specialityReferralType?.[specKey] ||
-            (data.specialityReferralType as Record<number, string>)?.[specId] ||
-            null;
-
-          return {
-            listingId: existingListing.id,
-            specialityId: specId,
-            offeredBy: offeredBy ? (offeredBy as 'personal' | 'practice') : null,
-            referralType: referralType ? (referralType as 'referral_required' | 'self_referral') : null,
-          };
+    // Execute updates inside an atomic database transaction
+    // If any error occurs during update or specialities insertion, the entire transaction rolls back
+    // and the previous version of the listing remains completely intact.
+    await db.transaction(async (tx) => {
+      await tx
+        .update(listings)
+        .set({
+          practiceName: data.practiceName,
+          contactName: data.contactName,
+          gocNumber: data.gocNumber,
+          addressLine1: data.addressLine1,
+          addressLine2: data.addressLine2 || null,
+          city: data.city,
+          postcode: data.postcode,
+          latitude: data.latitude,
+          longitude: data.longitude,
+          phone: data.phone,
+          email: data.email,
+          website: data.website || null,
+          description: data.description || null,
+          workingDays: data.workingDays && data.workingDays.length > 0 ? JSON.stringify(data.workingDays) : null,
+          status: newStatus,
+          updatedAt: new Date(),
         })
-      );
-    }
+        .where(eq(listings.id, existingListing.id));
+
+      // Clear old specialities and re-insert updated specialities atomically
+      await tx
+        .delete(listingSpecialities)
+        .where(eq(listingSpecialities.listingId, existingListing.id));
+
+      if (data.specialityIds.length > 0) {
+        await tx.insert(listingSpecialities).values(
+          data.specialityIds.map((specId) => {
+            const specKey = specId.toString();
+            const offeredBy =
+              data.specialityOfferedBy?.[specKey] ||
+              (data.specialityOfferedBy as Record<number, string>)?.[specId] ||
+              null;
+            const referralType =
+              data.specialityReferralType?.[specKey] ||
+              (data.specialityReferralType as Record<number, string>)?.[specId] ||
+              null;
+
+            return {
+              listingId: existingListing.id,
+              specialityId: specId,
+              offeredBy: offeredBy ? (offeredBy as 'personal' | 'practice') : null,
+              referralType: referralType ? (referralType as 'referral_required' | 'self_referral') : null,
+            };
+          })
+        );
+      }
+    });
 
     if (practiceDetailsChanged) {
       const origin = request.headers.get('origin') || 'http://localhost:3000';
