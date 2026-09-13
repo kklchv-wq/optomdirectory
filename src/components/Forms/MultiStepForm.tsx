@@ -160,6 +160,23 @@ export default function MultiStepForm({
         }
       });
       setErrors(newErrors);
+
+      const step0Fields = ['practiceName', 'contactName', 'gocNumber', 'phone', 'email', 'website', 'description', 'workingDays'];
+      const step1Fields = ['addressLine1', 'addressLine2', 'city', 'postcode', 'latitude', 'longitude'];
+      const step2Fields = ['specialityIds'];
+
+      const errorKeys = Object.keys(newErrors);
+      if (errorKeys.length > 0) {
+        const currentStepFields = currentStep === 0 ? step0Fields : currentStep === 1 ? step1Fields : step2Fields;
+        const hasErrorInCurrentStep = errorKeys.some((key) => currentStepFields.includes(key));
+
+        if (!hasErrorInCurrentStep) {
+          if (errorKeys.some((key) => step0Fields.includes(key))) setCurrentStep(0);
+          else if (errorKeys.some((key) => step1Fields.includes(key))) setCurrentStep(1);
+          else if (errorKeys.some((key) => step2Fields.includes(key))) setCurrentStep(2);
+        }
+      }
+
       return;
     }
 
@@ -359,29 +376,46 @@ export default function MultiStepForm({
             <span>Back</span>
           </button>
 
-          {currentStep < STEPS.length - 1 ? (
-            <button
-              type="button"
-              onClick={handleNext}
-              className="inline-flex items-center gap-1 px-5 py-2.5 bg-teal-700 hover:bg-teal-800 text-white font-semibold text-xs rounded-xl shadow-xs transition-colors cursor-pointer"
-            >
-              <span>Continue to Next Step</span>
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          ) : (
-            <button
-              type="submit"
-              disabled={submitting}
-              className="inline-flex items-center gap-1.5 px-6 py-2.5 bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs rounded-xl shadow-md transition-colors disabled:opacity-50 cursor-pointer"
-            >
-              {submitting ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <CheckCircle2 className="w-4 h-4" />
-              )}
-              <span>{isEditMode ? 'Save & Update Live' : 'Submit Practice Listing'}</span>
-            </button>
-          )}
+          <div className="flex items-center gap-2">
+            {isEditMode && currentStep < STEPS.length - 1 && (
+              <button
+                type="submit"
+                disabled={submitting}
+                className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-xl shadow-xs transition-colors disabled:opacity-50 cursor-pointer"
+              >
+                {submitting ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <CheckCircle2 className="w-4 h-4" />
+                )}
+                <span>Save Changes</span>
+              </button>
+            )}
+
+            {currentStep < STEPS.length - 1 ? (
+              <button
+                type="button"
+                onClick={handleNext}
+                className="inline-flex items-center gap-1 px-5 py-2.5 bg-teal-700 hover:bg-teal-800 text-white font-semibold text-xs rounded-xl shadow-xs transition-colors cursor-pointer"
+              >
+                <span>Continue to Next Step</span>
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            ) : (
+              <button
+                type="submit"
+                disabled={submitting}
+                className="inline-flex items-center gap-1.5 px-6 py-2.5 bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs rounded-xl shadow-md transition-colors disabled:opacity-50 cursor-pointer"
+              >
+                {submitting ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <CheckCircle2 className="w-4 h-4" />
+                )}
+                <span>{isEditMode ? 'Save & Update Live' : 'Submit Practice Listing'}</span>
+              </button>
+            )}
+          </div>
         </div>
       </form>
     </div>
