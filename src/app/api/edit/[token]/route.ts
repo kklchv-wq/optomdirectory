@@ -160,14 +160,14 @@ export async function PUT(
               data.specialityReferralType?.[specKey] ||
               (data.specialityReferralType as Record<number, string>)?.[specId];
 
-            const offeredBy: 'personal' | 'practice' =
+            const offeredBy: 'personal' | 'practice' | null =
               rawOfferedBy === 'personal' || rawOfferedBy === 'practice'
                 ? rawOfferedBy
-                : 'practice';
-            const referralType: 'referral_required' | 'self_referral' =
+                : null;
+            const referralType: 'referral_required' | 'self_referral' | null =
               rawReferralType === 'referral_required' || rawReferralType === 'self_referral'
                 ? rawReferralType
-                : 'self_referral';
+                : null;
 
             return {
               listingId: existingListing.id,

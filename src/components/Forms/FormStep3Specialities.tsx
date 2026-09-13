@@ -223,7 +223,7 @@ export default function FormStep3Specialities({
         <div>
           <strong className="font-bold">Simple Tag Selection:</strong>
           <p className="mt-0.5 text-[11px] text-teal-900 leading-relaxed">
-            Select any service or equipment item below to add it to your practice. Provider scope and referral buttons appear directly on checked items with standard defaults pre-selected — configuring them further is completely <strong>optional</strong>.
+            Select any service or equipment item below to add it to your profile. Provider scope and referral buttons appear directly on checked items — configuring them is completely <strong>optional</strong>. Unselected options will display as clean service tags on your profile without any unselected badges.
           </p>
         </div>
       </div>

@@ -101,8 +101,8 @@ async function initDatabaseTables() {
       CREATE TABLE IF NOT EXISTS listing_specialities (
         listing_id INTEGER NOT NULL REFERENCES listings(id) ON DELETE CASCADE,
         speciality_id INTEGER NOT NULL REFERENCES specialities(id) ON DELETE CASCADE,
-        offered_by TEXT NOT NULL DEFAULT 'practice',
-        referral_type TEXT NOT NULL DEFAULT 'self_referral',
+        offered_by TEXT,
+        referral_type TEXT,
         PRIMARY KEY (listing_id, speciality_id)
       );
 
@@ -132,6 +132,30 @@ async function initDatabaseTables() {
         created_at INTEGER NOT NULL
       );
     `);
+
+    // Safely ensure listing_specialities offered_by & referral_type columns are nullable
+    try {
+      const tableInfo = await client.execute(`PRAGMA table_info(listing_specialities);`);
+      const offeredByCol = tableInfo.rows.find((r: any) => r.name === 'offered_by');
+      if (offeredByCol && Number(offeredByCol.notnull) === 1) {
+        await client.execute(`PRAGMA foreign_keys = OFF;`);
+        await client.executeMultiple(`
+          CREATE TABLE listing_specialities_new (
+            listing_id INTEGER NOT NULL REFERENCES listings(id) ON DELETE CASCADE,
+            speciality_id INTEGER NOT NULL REFERENCES specialities(id) ON DELETE CASCADE,
+            offered_by TEXT,
+            referral_type TEXT,
+            PRIMARY KEY (listing_id, speciality_id)
+          );
+          INSERT INTO listing_specialities_new SELECT listing_id, speciality_id, offered_by, referral_type FROM listing_specialities;
+          DROP TABLE listing_specialities;
+          ALTER TABLE listing_specialities_new RENAME TO listing_specialities;
+        `);
+        await client.execute(`PRAGMA foreign_keys = ON;`);
+      }
+    } catch (migErr) {
+      console.error('Error migrating listing_specialities nullable constraint:', migErr);
+    }
 
     // Safely ensure columns added in later schema updates exist on persistent volumes
     try {
