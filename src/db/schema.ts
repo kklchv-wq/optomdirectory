@@ -53,6 +53,7 @@ export const listings = sqliteTable('listings', {
   email: text('email').notNull(),
   website: text('website'),
   description: text('description'), // Verified <= 600 chars via Zod
+  workingDays: text('working_days'), // JSON string array of active days e.g. ["Mon","Wed","Fri"]
   subscribeUpdates: integer('subscribe_updates', { mode: 'boolean' })
     .notNull()
     .default(true),

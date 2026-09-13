@@ -13,6 +13,17 @@ export default function FormStep1Details({
   updateFields,
   errors,
 }: Step1Props) {
+  const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+  const toggleWorkingDay = (day: string) => {
+    const currentDays = formData.workingDays || [];
+    if (currentDays.includes(day)) {
+      updateFields({ workingDays: currentDays.filter((d) => d !== day) });
+    } else {
+      updateFields({ workingDays: [...currentDays, day] });
+    }
+  };
+
   return (
     <div className="space-y-4">
       <h2 className="text-base font-bold text-slate-900 border-b border-slate-200 pb-2">
@@ -167,6 +178,32 @@ export default function FormStep1Details({
         {errors.description && (
           <p className="mt-1 text-xs text-red-600">{errors.description}</p>
         )}
+      </div>
+
+      {/* Optional Working Days Selection */}
+      <div className="pt-2 border-t border-slate-100 space-y-1.5">
+        <label className="block text-xs font-semibold text-slate-700">
+          Working Days / Clinic Availability <span className="text-slate-400 font-normal">(Optional — for part-time, locums, or specific clinic days)</span>
+        </label>
+        <div className="flex flex-wrap gap-2">
+          {DAYS.map((day) => {
+            const isSelected = (formData.workingDays || []).includes(day);
+            return (
+              <button
+                type="button"
+                key={day}
+                onClick={() => toggleWorkingDay(day)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border select-none ${
+                  isSelected
+                    ? 'bg-teal-700 text-white border-teal-700 shadow-2xs'
+                    : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
+                }`}
+              >
+                {isSelected ? '✓ ' : ''}{day}
+              </button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

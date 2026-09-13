@@ -56,6 +56,11 @@ async function getListingByEditToken(token: string) {
     email: practice.email,
     website: practice.website || '',
     description: practice.description || '',
+    workingDays: practice.workingDays
+      ? (typeof practice.workingDays === 'string'
+          ? (JSON.parse(practice.workingDays || '[]') as string[])
+          : (practice.workingDays as string[]))
+      : [],
     specialityIds,
     specialityOfferedBy,
     specialityReferralType,

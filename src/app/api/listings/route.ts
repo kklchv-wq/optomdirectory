@@ -110,8 +110,15 @@ export async function GET(request: NextRequest) {
 
         const practiceSpecialities = listingSpecialitiesMap.get(listing.id) || [];
 
+        const workingDaysParsed: string[] = listing.workingDays
+          ? (typeof listing.workingDays === 'string'
+              ? JSON.parse(listing.workingDays || '[]')
+              : listing.workingDays)
+          : [];
+
         return {
           ...listing,
+          workingDays: workingDaysParsed,
           specialities: practiceSpecialities,
           distanceMiles: Math.round(distanceMiles * 10) / 10, // Round to 1 decimal place
         };

@@ -98,6 +98,15 @@ export default function FormStep4Review({ formData, updateFields }: Step4Props) 
                 </span>
               </div>
             )}
+
+            {formData.workingDays && formData.workingDays.length > 0 && (
+              <div className="flex items-center gap-2 text-slate-700">
+                <span className="text-teal-600 font-bold">🗓️</span>
+                <span>
+                  <strong>Working Days:</strong> {formData.workingDays.join(', ')}
+                </span>
+              </div>
+            )}
           </div>
 
           <div className="space-y-2">

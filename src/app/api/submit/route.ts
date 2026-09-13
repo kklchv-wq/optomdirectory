@@ -69,6 +69,7 @@ export async function POST(request: NextRequest) {
         email: data.email,
         website: data.website || null,
         description: data.description || null,
+        workingDays: data.workingDays && data.workingDays.length > 0 ? JSON.stringify(data.workingDays) : null,
         subscribeUpdates: data.subscribeUpdates ?? true,
         status: 'pending',
         editToken,

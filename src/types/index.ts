@@ -26,6 +26,7 @@ export interface PracticeListing {
   email: string;
   website: string | null;
   description: string | null;
+  workingDays?: string[] | null;
   status: 'pending' | 'approved' | 'rejected';
   rejectionReason?: string | null;
   editToken?: string;

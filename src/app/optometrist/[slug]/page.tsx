@@ -56,8 +56,15 @@ async function getListingData(slug: string) {
     )
     .where(eq(listingSpecialities.listingId, practice.id));
 
+  const workingDaysParsed: string[] = practice.workingDays
+    ? (typeof practice.workingDays === 'string'
+        ? JSON.parse(practice.workingDays || '[]')
+        : practice.workingDays)
+    : [];
+
   return {
     ...practice,
+    workingDays: workingDaysParsed,
     specialities: practiceSpecialities,
   };
 }
@@ -118,6 +125,12 @@ export default async function ListingDetailPage({ params }: PageProps) {
     },
     medicalSpecialty: practice.specialities.map((s) => s.name),
   };
+
+  const workingDaysList: string[] = practice.workingDays
+    ? (typeof practice.workingDays === 'string'
+        ? (JSON.parse(practice.workingDays || '[]') as string[])
+        : (practice.workingDays as string[]))
+    : [];
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
@@ -195,6 +208,21 @@ export default async function ListingDetailPage({ params }: PageProps) {
                     </span>
                   </span>
                 </div>
+
+                {/* Working Days Pill Badges */}
+                {workingDaysList.length > 0 && (
+                  <div className="pt-2 flex flex-wrap items-center gap-1.5 text-xs text-teal-100">
+                    <span className="font-bold text-white text-xs mr-1">🗓️ Working Days:</span>
+                    {workingDaysList.map((day) => (
+                      <span
+                        key={day}
+                        className="px-2.5 py-0.5 rounded-md bg-teal-700/80 border border-teal-500/60 text-white text-[11px] font-extrabold"
+                      >
+                        {day}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <a

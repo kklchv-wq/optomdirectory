@@ -140,6 +140,9 @@ async function initDatabaseTables() {
     try {
       await client.execute(`ALTER TABLE listings ADD COLUMN subscribe_updates INTEGER NOT NULL DEFAULT 1;`);
     } catch {}
+    try {
+      await client.execute(`ALTER TABLE listings ADD COLUMN working_days TEXT;`);
+    } catch {}
 
     // Auto-seed initial specialities if missing
     for (const item of INITIAL_SPECIALITIES) {
