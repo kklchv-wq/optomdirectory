@@ -101,17 +101,17 @@ export async function POST(request: NextRequest) {
           const offeredBy =
             data.specialityOfferedBy?.[specKey] ||
             (data.specialityOfferedBy as Record<number, string>)?.[specId] ||
-            'personal';
+            null;
           const referralType =
             data.specialityReferralType?.[specKey] ||
             (data.specialityReferralType as Record<number, string>)?.[specId] ||
-            'self_referral';
+            null;
 
           return {
             listingId: insertedListing.id,
             specialityId: specId,
-            offeredBy: offeredBy as 'personal' | 'practice',
-            referralType: referralType as 'referral_required' | 'self_referral',
+            offeredBy: offeredBy ? (offeredBy as 'personal' | 'practice') : null,
+            referralType: referralType ? (referralType as 'referral_required' | 'self_referral') : null,
           };
         })
       );

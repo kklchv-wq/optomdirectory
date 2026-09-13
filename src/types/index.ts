@@ -6,8 +6,8 @@ export interface Speciality {
   groupName?: string | null;
   description: string | null;
   status?: 'approved' | 'pending' | null;
-  offeredBy?: 'personal' | 'practice';
-  referralType?: 'referral_required' | 'self_referral';
+  offeredBy?: 'personal' | 'practice' | null;
+  referralType?: 'referral_required' | 'self_referral' | null;
 }
 
 export interface PracticeListing {

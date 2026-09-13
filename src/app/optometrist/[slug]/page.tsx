@@ -94,7 +94,8 @@ export default async function ListingDetailPage({ params }: PageProps) {
   }
 
   const personalSpecialities = practice.specialities.filter((s) => s.offeredBy === 'personal');
-  const practiceSpecialities = practice.specialities.filter((s) => s.offeredBy !== 'personal');
+  const practiceSpecialities = practice.specialities.filter((s) => s.offeredBy === 'practice');
+  const generalSpecialities = practice.specialities.filter((s) => !s.offeredBy);
 
   // OpenStreetMap directions link
   const osmDirectionsUrl = `https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route=;${practice.latitude},${practice.longitude}`;
@@ -268,19 +269,21 @@ export default async function ListingDetailPage({ params }: PageProps) {
                         <div className="flex-1 min-w-0">
                           <div className="flex flex-wrap items-center justify-between gap-2">
                             <h4 className="text-xs font-bold text-slate-900">{spec.name}</h4>
-                            <div>
-                              {spec.referralType === 'referral_required' ? (
-                                <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-red-700 bg-red-50 border border-red-200/80 px-2 py-0.5 rounded-full">
-                                  <span className="w-1.5 h-1.5 rounded-full bg-red-600"></span>
-                                  <span>Referral Required</span>
-                                </span>
-                              ) : (
-                                <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-full">
-                                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
-                                  <span>Self-Referral</span>
-                                </span>
-                              )}
-                            </div>
+                            {spec.referralType && (
+                              <div>
+                                {spec.referralType === 'referral_required' ? (
+                                  <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-red-700 bg-red-50 border border-red-200/80 px-2 py-0.5 rounded-full">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-red-600"></span>
+                                    <span>Referral Required</span>
+                                  </span>
+                                ) : spec.referralType === 'self_referral' ? (
+                                  <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-full">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                                    <span>Self-Referral</span>
+                                  </span>
+                                ) : null}
+                              </div>
+                            )}
                           </div>
                           {spec.description && (
                             <p className="text-xs text-slate-600 mt-1 leading-relaxed">
@@ -310,19 +313,65 @@ export default async function ListingDetailPage({ params }: PageProps) {
                         <div className="flex-1 min-w-0">
                           <div className="flex flex-wrap items-center justify-between gap-2">
                             <h4 className="text-xs font-bold text-slate-900">{spec.name}</h4>
-                            <div>
-                              {spec.referralType === 'referral_required' ? (
-                                <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-red-700 bg-red-50 border border-red-200/80 px-2 py-0.5 rounded-full">
-                                  <span className="w-1.5 h-1.5 rounded-full bg-red-600"></span>
-                                  <span>Referral Required</span>
-                                </span>
-                              ) : (
-                                <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-full">
-                                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
-                                  <span>Self-Referral</span>
-                                </span>
-                              )}
-                            </div>
+                            {spec.referralType && (
+                              <div>
+                                {spec.referralType === 'referral_required' ? (
+                                  <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-red-700 bg-red-50 border border-red-200/80 px-2 py-0.5 rounded-full">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-red-600"></span>
+                                    <span>Referral Required</span>
+                                  </span>
+                                ) : spec.referralType === 'self_referral' ? (
+                                  <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-full">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                                    <span>Self-Referral</span>
+                                  </span>
+                                ) : null}
+                              </div>
+                            )}
+                          </div>
+                          {spec.description && (
+                            <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+                              {spec.description}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* 3. General Specialities & Equipment (no specific provider scope) */}
+              {generalSpecialities.length > 0 && (
+                <div className="space-y-3 pt-2">
+                  <h2 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                    <span>Clinical Services & Equipment</span>
+                  </h2>
+                  <div className="grid grid-cols-1 gap-2.5">
+                    {generalSpecialities.map((spec) => (
+                      <div
+                        key={spec.id}
+                        className="p-3 bg-white border border-slate-200 rounded-xl flex items-start gap-2.5 shadow-2xs"
+                      >
+                        <CheckCircle2 className="w-4 h-4 text-teal-600 shrink-0 mt-0.5" />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-wrap items-center justify-between gap-2">
+                            <h4 className="text-xs font-bold text-slate-900">{spec.name}</h4>
+                            {spec.referralType && (
+                              <div>
+                                {spec.referralType === 'referral_required' ? (
+                                  <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-red-700 bg-red-50 border border-red-200/80 px-2 py-0.5 rounded-full">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-red-600"></span>
+                                    <span>Referral Required</span>
+                                  </span>
+                                ) : spec.referralType === 'self_referral' ? (
+                                  <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-full">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                                    <span>Self-Referral</span>
+                                  </span>
+                                ) : null}
+                              </div>
+                            )}
                           </div>
                           {spec.description && (
                             <p className="text-xs text-slate-600 mt-1 leading-relaxed">

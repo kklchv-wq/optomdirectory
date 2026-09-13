@@ -66,10 +66,11 @@ export default function PracticeCard({
             const isPersonal = spec.offeredBy === 'personal';
             const isEquipment = spec.category === 'equipment';
             const isReferralOnly = spec.referralType === 'referral_required';
+            const isSelfReferral = spec.referralType === 'self_referral';
             return (
               <span
                 key={spec.id}
-                title={`${spec.name} (${isPersonal ? 'Offered personally' : 'Available in practice'}, ${isReferralOnly ? 'Referral required' : 'Self-referral allowed'})`}
+                title={spec.name}
                 className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg text-xs font-medium border ${
                   isPersonal
                     ? 'bg-teal-50 text-teal-950 border-teal-200'
@@ -78,19 +79,23 @@ export default function PracticeCard({
                     : 'bg-slate-50 text-slate-900 border-slate-200'
                 }`}
               >
-                <span>{isPersonal ? '👤' : isEquipment ? '🔬' : '🏥'}</span>
+                {spec.offeredBy === 'personal' ? (
+                  <span>👤</span>
+                ) : spec.offeredBy === 'practice' ? (
+                  <span>🏥</span>
+                ) : null}
                 <span>{spec.name}</span>
                 {isReferralOnly ? (
                   <span className="inline-flex items-center gap-1 text-[10px] font-bold text-red-700 bg-red-100/70 border border-red-200 px-1.5 py-0.2 rounded-full">
                     <span className="w-1.5 h-1.5 rounded-full bg-red-600"></span>
                     <span>Required</span>
                   </span>
-                ) : (
+                ) : isSelfReferral ? (
                   <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-100/70 border border-emerald-200 px-1.5 py-0.2 rounded-full">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
                     <span>Self</span>
                   </span>
-                )}
+                ) : null}
               </span>
             );
           })}

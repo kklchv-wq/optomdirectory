@@ -152,10 +152,8 @@ export default function FormStep4Review({ formData, updateFields }: Step4Props) 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {formData.specialityIds.map((id) => {
               const spec = specialitiesMap[id];
-              const offeredByVal = formData.specialityOfferedBy?.[id] || 'personal';
-              const referralTypeVal = formData.specialityReferralType?.[id] || 'self_referral';
-              const isPersonal = offeredByVal === 'personal';
-              const isReferralOnly = referralTypeVal === 'referral_required';
+              const offeredByVal = formData.specialityOfferedBy?.[id];
+              const referralTypeVal = formData.specialityReferralType?.[id];
 
               return (
                 <div
@@ -167,29 +165,35 @@ export default function FormStep4Review({ formData, updateFields }: Step4Props) 
                     <span>{spec ? spec.name : `Speciality #${id}`}</span>
                   </div>
 
-                  <div className="flex items-center gap-1.5 flex-wrap text-[10px] pt-1 border-t border-slate-100">
-                    {/* Provider Scope Badge */}
-                    <span
-                      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-semibold border ${
-                        isPersonal
-                          ? 'bg-teal-50 text-teal-900 border-teal-200'
-                          : 'bg-slate-100 text-slate-800 border-slate-200'
-                      }`}
-                    >
-                      <span>{isPersonal ? '👤 Offered Myself' : '🏥 In Practice'}</span>
-                    </span>
+                  {(offeredByVal || referralTypeVal) && (
+                    <div className="flex items-center gap-1.5 flex-wrap text-[10px] pt-1 border-t border-slate-100">
+                      {/* Provider Scope Badge */}
+                      {offeredByVal && (
+                        <span
+                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-semibold border ${
+                            offeredByVal === 'personal'
+                              ? 'bg-teal-50 text-teal-900 border-teal-200'
+                              : 'bg-slate-100 text-slate-800 border-slate-200'
+                          }`}
+                        >
+                          <span>{offeredByVal === 'personal' ? '👤 Offered Myself' : '🏥 In Practice'}</span>
+                        </span>
+                      )}
 
-                    {/* Patient Referral Mode Badge */}
-                    <span
-                      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-bold text-white ${
-                        isReferralOnly
-                          ? 'bg-amber-700'
-                          : 'bg-emerald-700'
-                      }`}
-                    >
-                      <span>{isReferralOnly ? '📩 Referral Only' : '🚶 Self-Referral'}</span>
-                    </span>
-                  </div>
+                      {/* Patient Referral Mode Badge */}
+                      {referralTypeVal && (
+                        <span
+                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-bold text-white ${
+                            referralTypeVal === 'referral_required'
+                              ? 'bg-amber-700'
+                              : 'bg-emerald-700'
+                          }`}
+                        >
+                          <span>{referralTypeVal === 'referral_required' ? '📩 Referral Only' : '🚶 Self-Referral'}</span>
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
               );
             })}

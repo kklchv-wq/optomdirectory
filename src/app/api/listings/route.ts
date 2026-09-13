@@ -86,15 +86,21 @@ export async function GET(request: NextRequest) {
       .innerJoin(specialities, eq(listingSpecialities.specialityId, specialities.id));
 
     // Map specialities to listings
-    const listingSpecialitiesMap = new Map<number, (typeof specialities.$inferSelect & { offeredBy: 'personal' | 'practice'; referralType: 'referral_required' | 'self_referral' })[]>();
+    const listingSpecialitiesMap = new Map<
+      number,
+      (typeof specialities.$inferSelect & {
+        offeredBy?: 'personal' | 'practice' | null;
+        referralType?: 'referral_required' | 'self_referral' | null;
+      })[]
+    >();
     for (const rel of relations) {
       if (!listingSpecialitiesMap.has(rel.listingId)) {
         listingSpecialitiesMap.set(rel.listingId, []);
       }
       listingSpecialitiesMap.get(rel.listingId)!.push({
         ...rel.speciality,
-        offeredBy: (rel.offeredBy || 'practice') as 'personal' | 'practice',
-        referralType: (rel.referralType || 'self_referral') as 'referral_required' | 'self_referral',
+        offeredBy: rel.offeredBy ? (rel.offeredBy as 'personal' | 'practice') : null,
+        referralType: rel.referralType ? (rel.referralType as 'referral_required' | 'self_referral') : null,
       });
     }
 

@@ -79,12 +79,8 @@ export const listingSpecialities = sqliteTable(
     specialityId: integer('speciality_id')
       .notNull()
       .references(() => specialities.id, { onDelete: 'cascade' }),
-    offeredBy: text('offered_by', { enum: ['personal', 'practice'] })
-      .notNull()
-      .default('practice'),
-    referralType: text('referral_type', { enum: ['referral_required', 'self_referral'] })
-      .notNull()
-      .default('self_referral'),
+    offeredBy: text('offered_by', { enum: ['personal', 'practice'] }),
+    referralType: text('referral_type', { enum: ['referral_required', 'self_referral'] }),
   },
   (table) => ({
     pk: primaryKey({ columns: [table.listingId, table.specialityId] }),
