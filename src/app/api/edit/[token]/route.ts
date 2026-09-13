@@ -153,20 +153,27 @@ export async function PUT(
         await tx.insert(listingSpecialities).values(
           data.specialityIds.map((specId) => {
             const specKey = specId.toString();
-            const offeredBy =
+            const rawOfferedBy =
               data.specialityOfferedBy?.[specKey] ||
-              (data.specialityOfferedBy as Record<number, string>)?.[specId] ||
-              null;
-            const referralType =
+              (data.specialityOfferedBy as Record<number, string>)?.[specId];
+            const rawReferralType =
               data.specialityReferralType?.[specKey] ||
-              (data.specialityReferralType as Record<number, string>)?.[specId] ||
-              null;
+              (data.specialityReferralType as Record<number, string>)?.[specId];
+
+            const offeredBy: 'personal' | 'practice' =
+              rawOfferedBy === 'personal' || rawOfferedBy === 'practice'
+                ? rawOfferedBy
+                : 'practice';
+            const referralType: 'referral_required' | 'self_referral' =
+              rawReferralType === 'referral_required' || rawReferralType === 'self_referral'
+                ? rawReferralType
+                : 'self_referral';
 
             return {
               listingId: existingListing.id,
               specialityId: specId,
-              offeredBy: offeredBy ? (offeredBy as 'personal' | 'practice') : null,
-              referralType: referralType ? (referralType as 'referral_required' | 'self_referral') : null,
+              offeredBy,
+              referralType,
             };
           })
         );
@@ -174,14 +181,15 @@ export async function PUT(
     });
 
     if (practiceDetailsChanged) {
-      const origin = request.headers.get('origin') || 'http://localhost:3000';
-      const editUrl = `${origin}/edit/${token}`;
+      try {
+        const origin = request.headers.get('origin') || 'http://localhost:3000';
+        const editUrl = `${origin}/edit/${token}`;
 
-      await mailer.sendEmail({
-        to: data.email,
-        subject: `Listing Details Submitted for Re-Approval: ${data.practiceName}`,
-        type: 'submission_received',
-        text: `Hello ${data.contactName},
+        await mailer.sendEmail({
+          to: data.email,
+          subject: `Listing Details Submitted for Re-Approval: ${data.practiceName}`,
+          type: 'submission_received',
+          text: `Hello ${data.contactName},
 
 Your updates to your practice details for "${data.practiceName}" have been received.
 
@@ -191,11 +199,14 @@ Edit link: ${editUrl}
 
 Best regards,
 Optom Referral Directory Team`,
-        metadata: {
-          listingId: existingListing.id,
-          editToken: token,
-        },
-      });
+          metadata: {
+            listingId: existingListing.id,
+            editToken: token,
+          },
+        });
+      } catch (emailError) {
+        console.error('Failed to send edit re-approval email (non-fatal):', emailError);
+      }
     }
 
     return NextResponse.json({
@@ -209,7 +220,7 @@ Optom Referral Directory Team`,
   } catch (error) {
     console.error('Edit PUT API error:', error);
     return NextResponse.json(
-      { error: 'Failed to update listing' },
+      { error: error instanceof Error ? error.message : 'Failed to update listing' },
       { status: 500 }
     );
   }

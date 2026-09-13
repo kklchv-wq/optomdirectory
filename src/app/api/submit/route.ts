@@ -84,20 +84,27 @@ export async function POST(request: NextRequest) {
         await tx.insert(listingSpecialities).values(
           data.specialityIds.map((specId) => {
             const specKey = specId.toString();
-            const offeredBy =
+            const rawOfferedBy =
               data.specialityOfferedBy?.[specKey] ||
-              (data.specialityOfferedBy as Record<number, string>)?.[specId] ||
-              null;
-            const referralType =
+              (data.specialityOfferedBy as Record<number, string>)?.[specId];
+            const rawReferralType =
               data.specialityReferralType?.[specKey] ||
-              (data.specialityReferralType as Record<number, string>)?.[specId] ||
-              null;
+              (data.specialityReferralType as Record<number, string>)?.[specId];
+
+            const offeredBy: 'personal' | 'practice' =
+              rawOfferedBy === 'personal' || rawOfferedBy === 'practice'
+                ? rawOfferedBy
+                : 'practice';
+            const referralType: 'referral_required' | 'self_referral' =
+              rawReferralType === 'referral_required' || rawReferralType === 'self_referral'
+                ? rawReferralType
+                : 'self_referral';
 
             return {
               listingId: newListing.id,
               specialityId: specId,
-              offeredBy: offeredBy ? (offeredBy as 'personal' | 'practice') : null,
-              referralType: referralType ? (referralType as 'referral_required' | 'self_referral') : null,
+              offeredBy,
+              referralType,
             };
           })
         );
@@ -125,12 +132,13 @@ export async function POST(request: NextRequest) {
     const origin = request.headers.get('origin') || 'http://localhost:3000';
     const editUrl = `${origin}/edit/${editToken}`;
 
-    // Trigger local dev mailer
-    await mailer.sendEmail({
-      to: data.email,
-      subject: `Listing Submission Received: ${data.practiceName}`,
-      type: 'submission_received',
-      text: `Hello ${data.contactName},
+    // Trigger local dev mailer safely
+    try {
+      await mailer.sendEmail({
+        to: data.email,
+        subject: `Listing Submission Received: ${data.practiceName}`,
+        type: 'submission_received',
+        text: `Hello ${data.contactName},
 
 Thank you for submitting your practice listing for "${data.practiceName}" to the Optometrist Speciality Directory.
 
@@ -143,12 +151,15 @@ ${editUrl}
 
 Best regards,
 Optom Referral Directory Team`,
-      metadata: {
-        listingId: insertedListing.id,
-        editToken,
-        editUrl,
-      },
-    });
+        metadata: {
+          listingId: insertedListing.id,
+          editToken,
+          editUrl,
+        },
+      });
+    } catch (emailError) {
+      console.error('Failed to send submission email (non-fatal):', emailError);
+    }
 
     return NextResponse.json({
       success: true,
