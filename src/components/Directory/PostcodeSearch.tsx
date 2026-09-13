@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Search, MapPin, Loader2, AlertCircle } from 'lucide-react';
 import { ukPostcodeRegex } from '@/schemas/listing';
 import { GeoLocation } from '@/types';
+import { trackEvent } from '@/lib/gtag';
 
 interface PostcodeSearchProps {
   onLocationChange: (location: GeoLocation) => void;
@@ -40,6 +41,12 @@ export default function PostcodeSearch({
         return;
       }
 
+      trackEvent({
+        action: 'search',
+        category: 'directory',
+        label: clean,
+      });
+
       onLocationChange({
         lat: data.latitude,
         lng: data.longitude,
@@ -66,6 +73,11 @@ export default function PostcodeSearch({
     navigator.geolocation.getCurrentPosition(
       (position) => {
         setGeoLoading(false);
+        trackEvent({
+          action: 'search_near_me',
+          category: 'directory',
+          label: 'geolocation',
+        });
         onLocationChange({
           lat: position.coords.latitude,
           lng: position.coords.longitude,

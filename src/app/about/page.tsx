@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Header from '@/components/UI/Header';
 import OptomLogo from '@/components/UI/OptomLogo';
+import { trackEvent } from '@/lib/gtag';
 import {
   Eye,
   ShieldCheck,
@@ -56,6 +57,11 @@ export default function AboutPage() {
       }
 
       setSuccessMsg(data.message || 'Thank you! Your message has been sent successfully.');
+      trackEvent({
+        action: 'contact_form_submit',
+        category: 'contact',
+        label: formData.role,
+      });
       setFormData({
         name: '',
         email: '',

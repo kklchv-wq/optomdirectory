@@ -8,6 +8,7 @@ import FormStep2Address from './FormStep2Address';
 import FormStep3Specialities from './FormStep3Specialities';
 import FormStep4Review from './FormStep4Review';
 import { Check, ChevronRight, ChevronLeft, Loader2, CheckCircle2, Copy } from 'lucide-react';
+import { trackEvent } from '@/lib/gtag';
 
 interface MultiStepFormProps {
   initialData?: ListingFormValues;
@@ -198,6 +199,12 @@ export default function MultiStepForm({
         setErrors({ form: data.error || 'Failed to submit listing.' });
         return;
       }
+
+      trackEvent({
+        action: isEditMode ? 'edit_listing' : 'submit_listing',
+        category: 'practitioner',
+        label: formData.practiceName,
+      });
 
       setSubmittedResult({
         editUrl: data.editUrl || `${window.location.origin}/edit/${editToken}`,
