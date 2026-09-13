@@ -63,3 +63,33 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to retrieve admin listings' }, { status: 500 });
   }
 }
+
+export async function DELETE(request: NextRequest) {
+  if (!verifyAdminPassword(request)) {
+    return NextResponse.json({ error: 'Unauthorized admin password' }, { status: 401 });
+  }
+
+  try {
+    const { searchParams } = new URL(request.url);
+    const idParam = searchParams.get('id');
+
+    let listingId = idParam ? parseInt(idParam, 10) : null;
+    if (!listingId) {
+      const body = await request.json().catch(() => ({}));
+      if (body.listingId) {
+        listingId = Number(body.listingId);
+      }
+    }
+
+    if (!listingId) {
+      return NextResponse.json({ error: 'Missing listingId parameter' }, { status: 400 });
+    }
+
+    await db.delete(listings).where(eq(listings.id, listingId));
+
+    return NextResponse.json({ success: true, message: 'Listing permanently deleted' });
+  } catch (error) {
+    console.error('Admin delete listing error:', error);
+    return NextResponse.json({ error: 'Failed to delete listing' }, { status: 500 });
+  }
+}

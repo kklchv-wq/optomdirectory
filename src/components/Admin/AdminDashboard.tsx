@@ -203,6 +203,38 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleDeleteListing = async (id: number, practiceName: string, contactName: string) => {
+    if (
+      !confirm(
+        `Are you sure you want to permanently delete practice "${practiceName}" (${contactName}) from the directory? This action cannot be undone.`
+      )
+    ) {
+      return;
+    }
+
+    setActionLoading(id);
+    try {
+      const res = await fetch(`/api/admin/listings?id=${id}`, {
+        method: 'DELETE',
+        headers: {
+          'x-admin-password': password || 'admin123',
+        },
+      });
+
+      if (res.ok) {
+        fetchAdminListings();
+      } else {
+        const data = await res.json();
+        alert(data.error || 'Failed to delete listing.');
+      }
+    } catch (err) {
+      console.error('Delete failed:', err);
+      alert('Failed to delete listing due to network error.');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
   // Add New Tag Handler
   const handleAddTag = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -562,13 +594,13 @@ export default function AdminDashboard() {
                   </div>
 
                   {/* Actions */}
-                  <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+                  <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-end gap-2">
                     {item.status !== 'approved' && (
                       <button
                         type="button"
                         onClick={() => handleApprove(item.id)}
                         disabled={actionLoading === item.id}
-                        className="inline-flex items-center gap-1 px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl shadow-2xs transition-colors cursor-pointer"
+                        className="inline-flex items-center gap-1 px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl shadow-2xs transition-colors cursor-pointer disabled:opacity-50"
                       >
                         <CheckCircle2 className="w-4 h-4" />
                         <span>Approve & Publish</span>
@@ -579,12 +611,24 @@ export default function AdminDashboard() {
                       <button
                         type="button"
                         onClick={() => setRejectingId(item.id)}
-                        className="inline-flex items-center gap-1 px-3.5 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 font-bold text-xs rounded-xl border border-red-200 transition-colors cursor-pointer"
+                        disabled={actionLoading === item.id}
+                        className="inline-flex items-center gap-1 px-3.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold text-xs rounded-xl border border-amber-200 transition-colors cursor-pointer disabled:opacity-50"
                       >
                         <XCircle className="w-4 h-4" />
                         <span>Reject</span>
                       </button>
                     )}
+
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteListing(item.id, item.practiceName, item.contactName)}
+                      disabled={actionLoading === item.id}
+                      className="inline-flex items-center gap-1 px-3.5 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 font-bold text-xs rounded-xl border border-red-200 transition-colors cursor-pointer disabled:opacity-50"
+                      title="Permanently delete practice listing"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      <span>Delete Practice</span>
+                    </button>
                   </div>
                 </div>
               ))}
