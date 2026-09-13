@@ -471,14 +471,6 @@ export default function FormStep3Specialities({
                                 ⏳ Pending
                               </span>
                             )}
-                            {spec.description && (
-                              <span
-                                title={spec.description}
-                                className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-slate-200 text-slate-600 text-[10px] font-semibold cursor-help hover:bg-teal-600 hover:text-white transition-colors shrink-0"
-                              >
-                                i
-                              </span>
-                            )}
                           </span>
                         </div>
                       </label>
@@ -595,14 +587,6 @@ export default function FormStep3Specialities({
                             {item.status === 'pending' && (
                               <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-800 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-300 shrink-0">
                                 ⏳ Pending
-                              </span>
-                            )}
-                            {item.description && (
-                              <span
-                                title={item.description}
-                                className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-slate-200 text-slate-600 text-[10px] font-semibold cursor-help hover:bg-indigo-600 hover:text-white transition-colors shrink-0"
-                              >
-                                i
                               </span>
                             )}
                           </span>
