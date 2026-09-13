@@ -189,23 +189,29 @@ function DashboardContent() {
                       <span>{spec.name}</span>
                     </div>
 
-                    <div className="flex items-center gap-2 text-[11px]">
-                      <span className="font-semibold text-slate-600">
-                        {isPersonal ? '👤 Offered Myself' : '🏥 In Practice'}
-                      </span>
+                    {(spec.offeredBy || spec.referralType) && (
+                      <div className="flex items-center gap-2 text-[11px]">
+                        {spec.offeredBy && (
+                          <span className="font-semibold text-slate-600">
+                            {spec.offeredBy === 'personal' ? '👤 Offered Myself' : '🏥 In Practice'}
+                          </span>
+                        )}
 
-                      {isReferralOnly ? (
-                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-red-700 bg-red-100/80 px-2 py-0.2 rounded-full">
-                          <span className="w-1.5 h-1.5 rounded-full bg-red-600"></span>
-                          <span>Referral Required</span>
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-100/80 px-2 py-0.2 rounded-full">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
-                          <span>Self-Referral</span>
-                        </span>
-                      )}
-                    </div>
+                        {spec.referralType && (
+                          spec.referralType === 'referral_required' ? (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-red-700 bg-red-100/80 px-2 py-0.2 rounded-full">
+                              <span className="w-1.5 h-1.5 rounded-full bg-red-600"></span>
+                              <span>Referral Required</span>
+                            </span>
+                          ) : spec.referralType === 'self_referral' ? (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-100/80 px-2 py-0.2 rounded-full">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                              <span>Self-Referral</span>
+                            </span>
+                          ) : null
+                        )}
+                      </div>
+                    )}
                   </div>
                 );
               })}

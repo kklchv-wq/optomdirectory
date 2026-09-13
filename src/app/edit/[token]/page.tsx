@@ -38,8 +38,12 @@ async function getListingByEditToken(token: string) {
   const specialityReferralType: Record<number, 'referral_required' | 'self_referral'> = {};
 
   for (const s of currentSpecialities) {
-    specialityOfferedBy[s.specialityId] = (s.offeredBy || 'personal') as 'personal' | 'practice';
-    specialityReferralType[s.specialityId] = (s.referralType || 'self_referral') as 'referral_required' | 'self_referral';
+    if (s.offeredBy) {
+      specialityOfferedBy[s.specialityId] = s.offeredBy as 'personal' | 'practice';
+    }
+    if (s.referralType) {
+      specialityReferralType[s.specialityId] = s.referralType as 'referral_required' | 'self_referral';
+    }
   }
 
   const initialFormData: ListingFormValues = {
