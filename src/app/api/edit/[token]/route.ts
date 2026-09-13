@@ -98,23 +98,19 @@ export async function PUT(
 
     const data = parseResult.data;
 
-    // Check if core practice details changed
-    const coreDetailsChanged =
+    // Check if core practice details changed (requires admin re-approval)
+    // Contact details (phone, email, website), description, working days, and offered services update live immediately.
+    const practiceDetailsChanged =
       existingListing.practiceName !== data.practiceName ||
       existingListing.contactName !== data.contactName ||
       existingListing.gocNumber !== data.gocNumber ||
       existingListing.addressLine1 !== data.addressLine1 ||
       (existingListing.addressLine2 || '') !== (data.addressLine2 || '') ||
       existingListing.city !== data.city ||
-      existingListing.postcode !== data.postcode ||
-      existingListing.phone !== data.phone ||
-      existingListing.email !== data.email ||
-      (existingListing.website || '') !== (data.website || '') ||
-      (existingListing.description || '') !== (data.description || '');
+      existingListing.postcode !== data.postcode;
 
     // Only require re-approval if core practice details changed.
-    // Services & equipment changes apply immediately without admin re-approval.
-    const newStatus = coreDetailsChanged
+    const newStatus = practiceDetailsChanged
       ? 'pending'
       : (existingListing.status === 'approved' ? 'approved' : existingListing.status);
 
@@ -168,7 +164,7 @@ export async function PUT(
       );
     }
 
-    if (coreDetailsChanged) {
+    if (practiceDetailsChanged) {
       const origin = request.headers.get('origin') || 'http://localhost:3000';
       const editUrl = `${origin}/edit/${token}`;
 
@@ -180,7 +176,7 @@ export async function PUT(
 
 Your updates to your practice details for "${data.practiceName}" have been received.
 
-Because practice contact or GOC details were modified, your listing has been queued for admin verification before going live.
+Because practice identity or address details were modified, your listing has been queued for admin verification before going live.
 
 Edit link: ${editUrl}
 
@@ -195,10 +191,10 @@ Optom Referral Directory Team`,
 
     return NextResponse.json({
       success: true,
-      reapprovalRequired: coreDetailsChanged,
-      message: coreDetailsChanged
+      reapprovalRequired: practiceDetailsChanged,
+      message: practiceDetailsChanged
         ? 'Practice details updated and queued for admin re-approval.'
-        : 'Services & Equipment updated instantly live on your listing!',
+        : 'Profile details updated live on your listing!',
       listingId: existingListing.id,
     });
   } catch (error) {
