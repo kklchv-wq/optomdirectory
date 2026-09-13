@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Header from '@/components/UI/Header';
+import OptomLogo from '@/components/UI/OptomLogo';
 import {
   Eye,
   ShieldCheck,
@@ -297,7 +298,7 @@ export default function AboutPage() {
       <footer className="bg-slate-900 text-slate-400 text-xs py-8 border-t border-slate-800 mt-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <Eye className="w-5 h-5 text-teal-400" />
+            <OptomLogo className="h-6 w-auto text-teal-400" />
             <span className="font-bold text-white text-sm">Optom Directory UK</span>
           </div>
 

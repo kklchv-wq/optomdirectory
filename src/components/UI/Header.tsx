@@ -3,9 +3,10 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Eye, UserPlus, LogIn, User, LogOut, Search, Info } from 'lucide-react';
+import { UserPlus, LogIn, User, LogOut, Search, Info } from 'lucide-react';
 
 import HeaderSearch from '@/components/UI/HeaderSearch';
+import OptomLogo from '@/components/UI/OptomLogo';
 
 interface AuthUser {
   id: number;
@@ -64,9 +65,7 @@ export default function Header({ onSelectTag, selectedSlugs }: HeaderProps) {
           href="/"
           className="flex items-center gap-2.5 group focus:outline-hidden focus:ring-2 focus:ring-teal-500 rounded-md shrink-0"
         >
-          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-teal-700 flex items-center justify-center text-white shadow-xs group-hover:bg-teal-800 transition-colors">
-            <Eye className="w-5 h-5 sm:w-6 sm:h-6" />
-          </div>
+          <OptomLogo className="h-8 sm:h-9 w-auto text-teal-800 group-hover:text-teal-900 transition-colors" />
           <span className="font-black text-base sm:text-lg text-slate-900 tracking-tight block leading-none">
             Optom Directory
           </span>
