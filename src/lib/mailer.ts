@@ -14,7 +14,8 @@ export interface EmailPayload {
     | 'listing_rejected'
     | 'password_reset'
     | 'alert_subscription_confirmed'
-    | 'contact_form_message';
+    | 'contact_form_message'
+    | 'tag_alert_matched';
   metadata?: Record<string, unknown>;
 }
 
