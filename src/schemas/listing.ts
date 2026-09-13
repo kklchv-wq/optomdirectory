@@ -51,7 +51,16 @@ export const listingFormSchema = z.object({
     .email('Must be a valid email address'),
   website: z
     .string()
-    .url('Must be a valid URL (including https://)')
+    .transform((val) => {
+      if (!val) return '';
+      const trimmed = val.trim();
+      if (!trimmed) return '';
+      if (!/^https?:\/\//i.test(trimmed)) {
+        return `https://${trimmed}`;
+      }
+      return trimmed;
+    })
+    .pipe(z.string().url('Must be a valid URL').or(z.literal('')))
     .optional()
     .or(z.literal('')),
   description: z

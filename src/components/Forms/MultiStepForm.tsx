@@ -61,6 +61,7 @@ export default function MultiStepForm({
     reapprovalRequired?: boolean;
     slug?: string;
   } | null>(null);
+  const [saveSuccessMessage, setSaveSuccessMessage] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
   const updateFields = (fields: Partial<ListingFormValues>) => {
@@ -206,17 +207,22 @@ export default function MultiStepForm({
         label: formData.practiceName,
       });
 
-      setSubmittedResult({
-        editUrl: data.editUrl || `${window.location.origin}/edit/${editToken}`,
-        reapprovalRequired: data.reapprovalRequired ?? true,
-        message: data.message || (
-          isEditMode
-            ? (data.reapprovalRequired === false
-                ? 'Services & equipment updated live on your listing!'
-                : 'Your practice details have been submitted for admin re-approval.')
-            : 'Your practice listing has been submitted for admin verification.'
-        ),
-      });
+      if (isEditMode) {
+        setSaveSuccessMessage(
+          data.message || (
+            data.reapprovalRequired === false
+              ? '✨ Services & equipment updated live on your profile!'
+              : 'ℹ️ Practice details saved and queued for admin re-approval.'
+          )
+        );
+        setTimeout(() => setSaveSuccessMessage(null), 8000);
+      } else {
+        setSubmittedResult({
+          editUrl: data.editUrl || `${window.location.origin}/edit/${editToken}`,
+          reapprovalRequired: data.reapprovalRequired ?? true,
+          message: data.message || 'Your practice listing has been submitted for admin verification.',
+        });
+      }
     } catch {
       setErrors({ form: 'An unexpected network error occurred. Please try again.' });
     } finally {
@@ -334,6 +340,22 @@ export default function MultiStepForm({
           />
         </div>
       </div>
+
+      {saveSuccessMessage && (
+        <div className="p-3.5 bg-emerald-50 text-emerald-900 text-xs rounded-xl border border-emerald-200 font-semibold flex items-center justify-between gap-3 shadow-2xs">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>{saveSuccessMessage}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setSaveSuccessMessage(null)}
+            className="text-emerald-700 hover:text-emerald-900 text-[11px] font-bold underline cursor-pointer"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
 
       {errors.form && (
         <div className="p-3 bg-red-50 text-red-700 text-xs rounded-xl border border-red-200 font-medium">
