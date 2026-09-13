@@ -212,22 +212,22 @@ export default function MultiStepForm({
         label: formData.practiceName,
       });
 
-      if (isEditMode) {
-        setSaveSuccessMessage(
-          data.message || (
-            data.reapprovalRequired === false
-              ? '✨ Services & equipment updated live on your profile!'
-              : 'ℹ️ Practice details saved and queued for admin re-approval.'
-          )
-        );
-        setTimeout(() => setSaveSuccessMessage(null), 8000);
-      } else {
-        setSubmittedResult({
-          editUrl: data.editUrl || `${window.location.origin}/edit/${editToken}`,
-          reapprovalRequired: data.reapprovalRequired ?? true,
-          message: data.message || 'Your practice listing has been submitted for admin verification.',
-        });
+      if (typeof window !== 'undefined') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
+
+      setSubmittedResult({
+        editUrl: data.editUrl || `${window.location.origin}/edit/${editToken}`,
+        reapprovalRequired: data.reapprovalRequired ?? false,
+        slug: data.slug,
+        message: data.message || (
+          isEditMode
+            ? (data.reapprovalRequired === false
+                ? 'Your registered services and equipment modifications are live on your public profile immediately.'
+                : 'Your practice details have been saved and submitted for admin re-approval.')
+            : 'Your practice listing has been submitted for admin verification.'
+        ),
+      });
     } catch {
       setErrors({ form: 'An unexpected network error occurred. Please try again.' });
     } finally {
@@ -265,12 +265,12 @@ export default function MultiStepForm({
           </p>
         </div>
 
-        <div className="pt-2 flex flex-col sm:flex-row gap-3">
+        <div className="pt-2 flex flex-col sm:flex-row flex-wrap gap-3">
           {submittedResult.slug ? (
             <button
               type="button"
               onClick={() => router.push(`/optometrist/${submittedResult.slug}`)}
-              className="flex-1 py-2.5 bg-teal-700 hover:bg-teal-800 text-white text-sm font-bold rounded-xl transition-colors shadow-2xs cursor-pointer"
+              className="flex-1 py-2.5 bg-teal-700 hover:bg-teal-800 text-white text-xs sm:text-sm font-bold rounded-xl transition-colors shadow-2xs cursor-pointer"
             >
               View Listing Profile
             </button>
@@ -278,17 +278,28 @@ export default function MultiStepForm({
             <button
               type="button"
               onClick={() => router.push('/dashboard')}
-              className="flex-1 py-2.5 bg-teal-700 hover:bg-teal-800 text-white text-sm font-bold rounded-xl transition-colors shadow-2xs cursor-pointer"
+              className="flex-1 py-2.5 bg-teal-700 hover:bg-teal-800 text-white text-xs sm:text-sm font-bold rounded-xl transition-colors shadow-2xs cursor-pointer"
             >
-              Go to Practitioner Portal
+              Practitioner Portal
             </button>
           )}
+
+          {isEditMode && (
+            <button
+              type="button"
+              onClick={() => setSubmittedResult(null)}
+              className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs sm:text-sm font-bold rounded-xl border border-slate-300 transition-colors cursor-pointer"
+            >
+              Continue Editing
+            </button>
+          )}
+
           <button
             type="button"
             onClick={() => router.push('/')}
-            className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-sm font-bold rounded-xl border border-slate-300 transition-colors cursor-pointer"
+            className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs sm:text-sm font-bold rounded-xl border border-slate-300 transition-colors cursor-pointer"
           >
-            Return to Directory Search
+            Return to Search
           </button>
         </div>
       </div>
