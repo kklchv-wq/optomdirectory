@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const ukPostcodeRegex = /^[A-Z]{1,2}[0-9][A-Z0-9]? ?[0-9][A-Z]{2}$/i;
-export const gocNumberRegex = /^(01-\d{5}|\d{5,6})$/;
+export const gocNumberRegex = /^(01-?\d{4,6}|\d{4,7}|GOC-?\d{4,7})$/i;
 
 export const listingFormSchema = z.object({
   practiceName: z
@@ -24,7 +24,8 @@ export const listingFormSchema = z.object({
     .string()
     .max(150, 'Address line 2 cannot exceed 150 characters')
     .optional()
-    .or(z.literal('')),
+    .or(z.literal(''))
+    .nullable(),
   city: z
     .string()
     .min(2, 'City/Town is required')
@@ -62,23 +63,25 @@ export const listingFormSchema = z.object({
     })
     .pipe(z.string().url('Must be a valid URL').or(z.literal('')))
     .optional()
-    .or(z.literal('')),
+    .or(z.literal(''))
+    .nullable(),
   description: z
     .string()
     .max(600, 'Description cannot exceed 600 characters')
     .optional()
-    .or(z.literal('')),
+    .or(z.literal(''))
+    .nullable(),
   specialityIds: z
     .array(z.number())
     .min(1, 'Please select at least one speciality'),
   specialityOfferedBy: z
-    .record(z.string(), z.enum(['personal', 'practice']).nullable().optional())
+    .record(z.string(), z.string().nullable().optional())
     .optional(),
   specialityReferralType: z
-    .record(z.string(), z.enum(['referral_required', 'self_referral']).nullable().optional())
+    .record(z.string(), z.string().nullable().optional())
     .optional(),
-  workingDays: z.array(z.string()).optional(),
-  subscribeUpdates: z.boolean().default(true).optional(),
+  workingDays: z.array(z.string()).optional().nullable(),
+  subscribeUpdates: z.boolean().default(true).optional().nullable(),
 });
 
 export type ListingFormValues = z.infer<typeof listingFormSchema>;

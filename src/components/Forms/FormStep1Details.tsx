@@ -170,7 +170,7 @@ export default function FormStep1Details({
           id="description"
           rows={4}
           maxLength={600}
-          value={formData.description}
+          value={formData.description || ''}
           onChange={(e) => updateFields({ description: e.target.value })}
           placeholder="Describe your clinic's specialized equipment (e.g. Optomap, OCT, Colorimeter), clinical focus areas, referral procedures, and appointment availability."
           className="mt-1 w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-teal-500"

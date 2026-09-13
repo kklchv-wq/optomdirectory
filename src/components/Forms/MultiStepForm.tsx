@@ -197,7 +197,12 @@ export default function MultiStepForm({
       const data = await response.json();
 
       if (!response.ok || data.error) {
-        setErrors({ form: data.error || 'Failed to submit listing.' });
+        const detailMsg = data.details
+          ? Object.entries(data.details)
+              .map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(', ') : v}`)
+              .join('; ')
+          : (data.error || 'Failed to submit listing.');
+        setErrors({ form: detailMsg });
         return;
       }
 
