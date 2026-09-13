@@ -316,8 +316,8 @@ export default function MapLibreMap({
 
     const popupHtml = `
       <div style="padding:4px; font-family:system-ui,-apple-system,sans-serif; max-width:240px;">
-        <h4 style="margin:0 0 2px 0; font-size:14px; font-weight:800; color:#0f172a; line-height:1.2;">${practice.practiceName}</h4>
-        <p style="margin:0 0 4px 0; font-size:11.5px; font-weight:600; color:#0d9488;">👓 Lead Optometrist: ${practice.contactName} (${practice.gocNumber})</p>
+        <h4 style="margin:0 0 2px 0; font-size:14px; font-weight:800; color:#0f172a; line-height:1.2;">👨‍⚕️ ${practice.contactName}</h4>
+        <p style="margin:0 0 4px 0; font-size:11.5px; font-weight:600; color:#0d9488;">🏥 ${practice.practiceName} (GOC: ${practice.gocNumber})</p>
         <p style="margin:0 0 6px 0; font-size:11px; color:#475569;">📍 ${practice.addressLine1}, ${practice.city} (${practice.postcode})</p>
         <div style="margin-bottom:8px;">${specsHtml}</div>
         <a href="/optometrist/${practice.slug}" style="display:inline-block; background:#0d9488; color:#ffffff; padding:5px 12px; border-radius:6px; font-size:11px; font-weight:700; text-decoration:none; box-shadow:0 1px 2px rgba(0,0,0,0.1);">View Full Listing &rarr;</a>

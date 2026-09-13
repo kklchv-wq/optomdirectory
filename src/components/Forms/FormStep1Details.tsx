@@ -41,7 +41,7 @@ export default function FormStep1Details({
         {/* Lead Contact Name */}
         <div>
           <label htmlFor="contactName" className="block text-xs font-semibold text-slate-700">
-            Lead Optometrist / Contact Name <span className="text-red-500">*</span>
+            Optometrist / Contact Name <span className="text-red-500">*</span>
           </label>
           <input
             id="contactName"
