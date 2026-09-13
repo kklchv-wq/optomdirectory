@@ -5,6 +5,7 @@ import { NextResponse } from 'next/server';
 import { db } from '@/db';
 import { contactMessages } from '@/db/schema';
 import { z } from 'zod';
+import { mailer } from '@/lib/mailer';
 
 const contactSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -26,6 +27,32 @@ export async function POST(request: Request) {
       subject: validatedData.subject,
       message: validatedData.message,
       createdAt: new Date(),
+    });
+
+    const targetAdminEmail = process.env.CONTACT_FORM_RECIPIENT_EMAIL || 'kklchv@gmail.com';
+
+    await mailer.sendEmail({
+      to: targetAdminEmail,
+      replyTo: validatedData.email,
+      subject: `[Contact Form] ${validatedData.subject}`,
+      type: 'contact_form_message',
+      text: `New contact form submission received from UK Optom Directory:
+
+From: ${validatedData.name} (${validatedData.email})
+Role/Category: ${validatedData.role}
+Subject: ${validatedData.subject}
+
+Message:
+-------------------------------------------------------
+${validatedData.message}
+-------------------------------------------------------
+
+(Replying directly to this email will reply to ${validatedData.email})`,
+      metadata: {
+        senderName: validatedData.name,
+        senderEmail: validatedData.email,
+        role: validatedData.role,
+      },
     });
 
     return NextResponse.json({

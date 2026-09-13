@@ -7,12 +7,14 @@ export interface EmailPayload {
   subject: string;
   text: string;
   html?: string;
+  replyTo?: string;
   type:
     | 'submission_received'
     | 'listing_approved'
     | 'listing_rejected'
     | 'password_reset'
-    | 'alert_subscription_confirmed';
+    | 'alert_subscription_confirmed'
+    | 'contact_form_message';
   metadata?: Record<string, unknown>;
 }
 
@@ -42,6 +44,7 @@ export class DevMailer implements MailerService {
     const emailData = {
       timestamp: new Date().toISOString(),
       to: payload.to,
+      replyTo: payload.replyTo || null,
       subject: payload.subject,
       text: payload.text,
       html: payload.html || null,
@@ -50,9 +53,12 @@ export class DevMailer implements MailerService {
     };
 
     console.log('\n=================== LOCAL DEV EMAIL ===================');
-    console.log(`TYPE:    ${payload.type}`);
-    console.log(`TO:      ${payload.to}`);
-    console.log(`SUBJECT: ${payload.subject}`);
+    console.log(`TYPE:     ${payload.type}`);
+    console.log(`TO:       ${payload.to}`);
+    if (payload.replyTo) {
+      console.log(`REPLY-TO: ${payload.replyTo}`);
+    }
+    console.log(`SUBJECT:  ${payload.subject}`);
     console.log('-------------------------------------------------------');
     console.log(payload.text);
     console.log('=======================================================\n');
@@ -85,6 +91,7 @@ export class ResendMailer implements MailerService {
       const { data, error } = await this.resend.emails.send({
         from: this.defaultFrom,
         to: payload.to,
+        replyTo: payload.replyTo,
         subject: payload.subject,
         text: payload.text,
         html: payload.html || payload.text.replace(/\n/g, '<br/>'),
