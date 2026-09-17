@@ -10,6 +10,8 @@ import {
   ChevronDown,
   ChevronUp,
   Filter,
+  Search,
+  X,
 } from 'lucide-react';
 
 interface FilterChipsProps {
@@ -36,9 +38,25 @@ export default function FilterChips({
   onChange,
 }: FilterChipsProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeCategory, setActiveCategory] = useState<'all' | 'service' | 'equipment'>('all');
 
-  const services = specialities.filter((s) => s.category === 'service' || !s.category);
-  const equipment = specialities.filter((s) => s.category === 'equipment');
+  const filteredSpecialities = specialities.filter((s) => {
+    if (activeCategory !== 'all' && (s.category || 'service') !== activeCategory) {
+      return false;
+    }
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase().trim();
+    return (
+      s.name.toLowerCase().includes(q) ||
+      (s.groupName && s.groupName.toLowerCase().includes(q))
+    );
+  });
+
+  const services = filteredSpecialities.filter(
+    (s) => s.category === 'service' || !s.category
+  );
+  const equipment = filteredSpecialities.filter((s) => s.category === 'equipment');
 
   const serviceGroups = groupBySubGroup(services);
   const equipmentGroups = groupBySubGroup(equipment);
@@ -53,26 +71,30 @@ export default function FilterChips({
 
   const clearAll = () => {
     onChange([]);
+    setSearchQuery('');
+    setActiveCategory('all');
   };
 
-  const selectedSpecialities = specialities.filter((s) => selectedSlugs.includes(s.slug));
+  const selectedSpecialities = specialities.filter((s) =>
+    selectedSlugs.includes(s.slug)
+  );
 
   return (
     <div className="w-full bg-slate-50/90 p-2.5 sm:p-3 rounded-xl border border-slate-200/90 shadow-2xs space-y-2.5">
       {/* Top Bar: Title, Active Chips Summary when collapsed, & Controls */}
       <div className="flex items-center justify-between border-b border-slate-200/80 pb-2 gap-2 flex-wrap sm:flex-nowrap">
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-xs sm:text-sm font-extrabold text-slate-900 tracking-tight flex items-center gap-1.5">
+        <div className="flex items-center gap-2 flex-wrap flex-1 min-w-0">
+          <span className="text-xs sm:text-sm font-extrabold text-slate-900 tracking-tight flex items-center gap-1.5 shrink-0">
             <Filter className="w-3.5 h-3.5 text-teal-700 shrink-0" />
-            <span>What are you looking for?</span>
-            <span className="text-[11px] font-medium text-slate-500 font-mono">
-              ({specialities.length})
+            <span>Filter by Services & Equipment</span>
+            <span className="text-[10px] font-medium text-slate-500 font-mono">
+              ({selectedSlugs.length ? `${selectedSlugs.length} active` : specialities.length})
             </span>
           </span>
 
-          {/* If collapsed and has selected filters, show compact active badges */}
+          {/* Active selection pills summary when collapsed */}
           {isCollapsed && selectedSpecialities.length > 0 && (
-            <div className="flex items-center gap-1 flex-wrap">
+            <div className="flex items-center gap-1 flex-wrap overflow-hidden max-h-6">
               {selectedSpecialities.map((spec) => (
                 <span
                   key={spec.id}
@@ -85,7 +107,7 @@ export default function FilterChips({
           )}
         </div>
 
-        <div className="flex items-center gap-2 ml-auto">
+        <div className="flex items-center gap-2 shrink-0 ml-auto">
           {selectedSlugs.length > 0 && (
             <button
               type="button"
@@ -117,104 +139,176 @@ export default function FilterChips({
         </div>
       </div>
 
-      {/* Main Options Grid (Hidden when collapsed) */}
+      {/* Main Options Panel (Hidden when collapsed) */}
       {!isCollapsed && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 pt-0.5">
-          {/* Column 1: Clinical Services & Procedures */}
-          {services.length > 0 && (
-            <div className="space-y-2">
-              <div className="flex items-center gap-1.5 text-[11px] font-bold text-teal-950 uppercase tracking-wider pb-0.5 border-b border-teal-100">
-                <Stethoscope className="w-3.5 h-3.5 text-teal-600 shrink-0" />
-                <span>Clinical Services & Procedures</span>
-              </div>
-
-              <div className="space-y-2">
-                {Object.entries(serviceGroups).map(([groupName, groupItems]) => (
-                  <div key={groupName} className="space-y-0.5">
-                    <span className="text-[10px] font-extrabold text-teal-800 uppercase tracking-wide block">
-                      {groupName}
-                    </span>
-                    <fieldset className="flex flex-wrap gap-1">
-                      <legend className="sr-only">{groupName}</legend>
-                      {groupItems.map((spec) => {
-                        const isSelected = selectedSlugs.includes(spec.slug);
-                        return (
-                          <label
-                            key={spec.id}
-                            title={spec.description || undefined}
-                            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium cursor-pointer select-none transition-all focus-within:ring-2 focus-within:ring-teal-500 ${
-                              isSelected
-                                ? 'bg-teal-700 text-white shadow-2xs'
-                                : 'bg-white text-slate-700 hover:bg-teal-50 border border-slate-200 hover:border-teal-300'
-                            }`}
-                          >
-                            <input
-                              type="checkbox"
-                              name="speciality-filter"
-                              value={spec.slug}
-                              checked={isSelected}
-                              onChange={() => toggleSpeciality(spec.slug)}
-                              className="sr-only"
-                            />
-                            {isSelected && <Check className="w-3 h-3 text-white" />}
-                            <span>{spec.name}</span>
-                          </label>
-                        );
-                      })}
-                    </fieldset>
-                  </div>
-                ))}
-              </div>
+        <div className="space-y-2.5">
+          {/* Mobile-optimized Filter Controls Bar (Search + Category Filter Tabs) */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 bg-white p-2 rounded-lg border border-slate-200/80">
+            {/* Quick Search Bar */}
+            <div className="relative flex-1">
+              <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search tags (e.g. OCT, Dry Eye, IP)..."
+                className="w-full pl-8 pr-7 py-1 bg-slate-50 border border-slate-200 rounded-md text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-teal-500 focus:bg-white"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
             </div>
-          )}
 
-          {/* Column 2: Specialized Diagnostic Equipment */}
-          {equipment.length > 0 && (
-            <div className="space-y-2">
-              <div className="flex items-center gap-1.5 text-[11px] font-bold text-indigo-950 uppercase tracking-wider pb-0.5 border-b border-indigo-100">
-                <Microchip className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                <span>Specialized Diagnostic Equipment</span>
-              </div>
-
-              <div className="space-y-2">
-                {Object.entries(equipmentGroups).map(([groupName, groupItems]) => (
-                  <div key={groupName} className="space-y-0.5">
-                    <span className="text-[10px] font-extrabold text-indigo-800 uppercase tracking-wide block">
-                      {groupName}
-                    </span>
-                    <fieldset className="flex flex-wrap gap-1">
-                      <legend className="sr-only">{groupName}</legend>
-                      {groupItems.map((item) => {
-                        const isSelected = selectedSlugs.includes(item.slug);
-                        return (
-                          <label
-                            key={item.id}
-                            title={item.description || undefined}
-                            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium cursor-pointer select-none transition-all focus-within:ring-2 focus-within:ring-indigo-500 ${
-                              isSelected
-                                ? 'bg-indigo-700 text-white shadow-2xs'
-                                : 'bg-white text-slate-700 hover:bg-indigo-50 border border-slate-200 hover:border-indigo-300'
-                            }`}
-                          >
-                            <input
-                              type="checkbox"
-                              name="equipment-filter"
-                              value={item.slug}
-                              checked={isSelected}
-                              onChange={() => toggleSpeciality(item.slug)}
-                              className="sr-only"
-                            />
-                            {isSelected && <Check className="w-3 h-3 text-white" />}
-                            <span>{item.name}</span>
-                          </label>
-                        );
-                      })}
-                    </fieldset>
-                  </div>
-                ))}
-              </div>
+            {/* Category Filter Pills */}
+            <div className="flex items-center gap-1 self-center shrink-0">
+              <button
+                type="button"
+                onClick={() => setActiveCategory('all')}
+                className={`px-2.5 py-0.5 rounded-md text-[11px] font-bold transition-all cursor-pointer ${
+                  activeCategory === 'all'
+                    ? 'bg-slate-900 text-white shadow-2xs'
+                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                }`}
+              >
+                All
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveCategory('service')}
+                className={`px-2.5 py-0.5 rounded-md text-[11px] font-bold transition-all cursor-pointer ${
+                  activeCategory === 'service'
+                    ? 'bg-teal-700 text-white shadow-2xs'
+                    : 'bg-teal-50 text-teal-800 hover:bg-teal-100'
+                }`}
+              >
+                Services
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveCategory('equipment')}
+                className={`px-2.5 py-0.5 rounded-md text-[11px] font-bold transition-all cursor-pointer ${
+                  activeCategory === 'equipment'
+                    ? 'bg-indigo-700 text-white shadow-2xs'
+                    : 'bg-indigo-50 text-indigo-800 hover:bg-indigo-100'
+                }`}
+              >
+                Equipment
+              </button>
             </div>
-          )}
+          </div>
+
+          {/* Options Grid with Constrained Mobile Scroll Height */}
+          <div className="max-h-56 sm:max-h-80 overflow-y-auto pr-1 space-y-3 custom-scrollbar">
+            {filteredSpecialities.length === 0 ? (
+              <div className="py-6 text-center text-xs text-slate-500 bg-white rounded-lg border border-slate-200">
+                No tags match "{searchQuery}".
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                {/* Column 1: Clinical Services & Procedures */}
+                {services.length > 0 && (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-1.5 text-[11px] font-bold text-teal-950 uppercase tracking-wider pb-0.5 border-b border-teal-100">
+                      <Stethoscope className="w-3.5 h-3.5 text-teal-600 shrink-0" />
+                      <span>Clinical Services & Procedures</span>
+                    </div>
+
+                    <div className="space-y-2">
+                      {Object.entries(serviceGroups).map(([groupName, groupItems]) => (
+                        <div key={groupName} className="space-y-0.5">
+                          <span className="text-[10px] font-extrabold text-teal-800 uppercase tracking-wide block">
+                            {groupName}
+                          </span>
+                          <fieldset className="flex flex-wrap gap-1">
+                            <legend className="sr-only">{groupName}</legend>
+                            {groupItems.map((spec) => {
+                              const isSelected = selectedSlugs.includes(spec.slug);
+                              return (
+                                <label
+                                  key={spec.id}
+                                  title={spec.description || undefined}
+                                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-medium cursor-pointer select-none transition-all focus-within:ring-2 focus-within:ring-teal-500 ${
+                                    isSelected
+                                      ? 'bg-teal-700 text-white shadow-2xs font-bold'
+                                      : 'bg-white text-slate-700 hover:bg-teal-50 border border-slate-200 hover:border-teal-300'
+                                  }`}
+                                >
+                                  <input
+                                    type="checkbox"
+                                    name="speciality-filter"
+                                    value={spec.slug}
+                                    checked={isSelected}
+                                    onChange={() => toggleSpeciality(spec.slug)}
+                                    className="sr-only"
+                                  />
+                                  {isSelected && <Check className="w-3 h-3 text-white" />}
+                                  <span>{spec.name}</span>
+                                </label>
+                              );
+                            })}
+                          </fieldset>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Column 2: Specialized Diagnostic Equipment */}
+                {equipment.length > 0 && (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-1.5 text-[11px] font-bold text-indigo-950 uppercase tracking-wider pb-0.5 border-b border-indigo-100">
+                      <Microchip className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                      <span>Specialized Diagnostic Equipment</span>
+                    </div>
+
+                    <div className="space-y-2">
+                      {Object.entries(equipmentGroups).map(([groupName, groupItems]) => (
+                        <div key={groupName} className="space-y-0.5">
+                          <span className="text-[10px] font-extrabold text-indigo-800 uppercase tracking-wide block">
+                            {groupName}
+                          </span>
+                          <fieldset className="flex flex-wrap gap-1">
+                            <legend className="sr-only">{groupName}</legend>
+                            {groupItems.map((item) => {
+                              const isSelected = selectedSlugs.includes(item.slug);
+                              return (
+                                <label
+                                  key={item.id}
+                                  title={item.description || undefined}
+                                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-medium cursor-pointer select-none transition-all focus-within:ring-2 focus-within:ring-indigo-500 ${
+                                    isSelected
+                                      ? 'bg-indigo-700 text-white shadow-2xs font-bold'
+                                      : 'bg-white text-slate-700 hover:bg-indigo-50 border border-slate-200 hover:border-indigo-300'
+                                  }`}
+                                >
+                                  <input
+                                    type="checkbox"
+                                    name="equipment-filter"
+                                    value={item.slug}
+                                    checked={isSelected}
+                                    onChange={() => toggleSpeciality(item.slug)}
+                                    className="sr-only"
+                                  />
+                                  {isSelected && <Check className="w-3 h-3 text-white" />}
+                                  <span>{item.name}</span>
+                                </label>
+                              );
+                            })}
+                          </fieldset>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

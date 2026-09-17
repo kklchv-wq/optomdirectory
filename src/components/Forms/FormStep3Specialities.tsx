@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { ListingFormValues } from '@/schemas/listing';
 import { Speciality } from '@/types';
-import { Stethoscope, Microchip, CheckCircle2, Plus, Sparkles, X, Loader2 } from 'lucide-react';
+import { Stethoscope, Microchip, CheckCircle2, Plus, Sparkles, X, Loader2, Search } from 'lucide-react';
 
 interface Step3Props {
   formData: ListingFormValues;
@@ -30,6 +30,8 @@ export default function FormStep3Specialities({
 }: Step3Props) {
   const [specialitiesList, setSpecialitiesList] = useState<Speciality[]>([]);
   const [loading, setLoading] = useState(true);
+  const [stepSearch, setStepSearch] = useState('');
+  const [stepTab, setStepTab] = useState<'all' | 'service' | 'equipment' | 'selected'>('all');
 
   // Custom Tag Form State
   const [showCustomModal, setShowCustomModal] = useState(false);
@@ -182,8 +184,20 @@ export default function FormStep3Specialities({
     }
   };
 
-  const services = specialitiesList.filter((s) => s.category === 'service' || !s.category);
-  const equipment = specialitiesList.filter((s) => s.category === 'equipment');
+  const filteredSpecialities = specialitiesList.filter((s) => {
+    if (stepTab === 'service' && s.category === 'equipment') return false;
+    if (stepTab === 'equipment' && (s.category || 'service') !== 'equipment') return false;
+    if (stepTab === 'selected' && !formData.specialityIds?.includes(s.id)) return false;
+    if (!stepSearch.trim()) return true;
+    const q = stepSearch.toLowerCase().trim();
+    return (
+      s.name.toLowerCase().includes(q) ||
+      (s.groupName && s.groupName.toLowerCase().includes(q))
+    );
+  });
+
+  const services = filteredSpecialities.filter((s) => s.category === 'service' || !s.category);
+  const equipment = filteredSpecialities.filter((s) => s.category === 'equipment');
 
   const serviceGroups = groupBySubGroup(services);
   const equipmentGroups = groupBySubGroup(equipment);
@@ -197,7 +211,7 @@ export default function FormStep3Specialities({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-200 pb-3">
         <div>
           <h2 className="text-base font-bold text-slate-900">
@@ -225,6 +239,76 @@ export default function FormStep3Specialities({
           <p className="mt-0.5 text-[11px] text-teal-900 leading-relaxed">
             Select any service or equipment item below to add it to your profile. Provider scope and referral buttons appear directly on checked items — configuring them is completely <strong>optional</strong>. Unselected options will display as clean service tags on your profile without any unselected badges.
           </p>
+        </div>
+      </div>
+
+      {/* Quick Search & Category Filter Tabs */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 bg-slate-100/90 p-2.5 rounded-xl border border-slate-200">
+        <div className="relative flex-1">
+          <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input
+            type="text"
+            value={stepSearch}
+            onChange={(e) => setStepSearch(e.target.value)}
+            placeholder="Search tags (e.g. OCT, Dry Eye, IP)..."
+            className="w-full pl-8 pr-7 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500"
+          />
+          {stepSearch && (
+            <button
+              type="button"
+              onClick={() => setStepSearch('')}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
+
+        <div className="flex items-center gap-1 overflow-x-auto pb-0.5 sm:pb-0 shrink-0">
+          <button
+            type="button"
+            onClick={() => setStepTab('all')}
+            className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              stepTab === 'all'
+                ? 'bg-slate-900 text-white shadow-2xs'
+                : 'bg-white text-slate-700 hover:bg-slate-200 border border-slate-200'
+            }`}
+          >
+            All ({specialitiesList.length})
+          </button>
+          <button
+            type="button"
+            onClick={() => setStepTab('service')}
+            className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              stepTab === 'service'
+                ? 'bg-teal-700 text-white shadow-2xs'
+                : 'bg-teal-50 text-teal-800 hover:bg-teal-100 border border-teal-200'
+            }`}
+          >
+            🩺 Services ({specialitiesList.filter((s) => s.category === 'service' || !s.category).length})
+          </button>
+          <button
+            type="button"
+            onClick={() => setStepTab('equipment')}
+            className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              stepTab === 'equipment'
+                ? 'bg-indigo-700 text-white shadow-2xs'
+                : 'bg-indigo-50 text-indigo-800 hover:bg-indigo-100 border border-indigo-200'
+            }`}
+          >
+            🔬 Equipment ({specialitiesList.filter((s) => s.category === 'equipment').length})
+          </button>
+          <button
+            type="button"
+            onClick={() => setStepTab('selected')}
+            className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              stepTab === 'selected'
+                ? 'bg-emerald-700 text-white shadow-2xs'
+                : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200'
+            }`}
+          >
+            ✓ Selected ({formData.specialityIds?.length || 0})
+          </button>
         </div>
       </div>
 
@@ -428,9 +512,11 @@ export default function FormStep3Specialities({
         </div>
       )}
 
-      {/* 1. Clinical Services & Procedures */}
-      <div className="space-y-4">
-        <h3 className="text-xs font-bold text-teal-950 flex items-center gap-1.5 uppercase tracking-wider">
+      {/* Services & Equipment Tag Cards (Scrollable on Mobile) */}
+      <div className="max-h-[55vh] sm:max-h-none overflow-y-auto pr-1 space-y-6 custom-scrollbar">
+        {/* 1. Clinical Services & Procedures */}
+        <div className="space-y-4">
+          <h3 className="text-xs font-bold text-teal-950 flex items-center gap-1.5 uppercase tracking-wider">
           <Stethoscope className="w-4 h-4 text-teal-600" />
           <span>1. Clinical Services & Procedures</span>
         </h3>
@@ -664,5 +750,6 @@ export default function FormStep3Specialities({
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 }

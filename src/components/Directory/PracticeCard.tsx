@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { PracticeListing } from '@/types';
 import { MapPin, ChevronRight, Building2 } from 'lucide-react';
@@ -17,6 +18,7 @@ export default function PracticeCard({
   onHover,
   onSelect,
 }: PracticeCardProps) {
+  const [showAllTags, setShowAllTags] = useState(false);
   return (
     <div
       onMouseEnter={() => onHover(practice.id)}
@@ -61,44 +63,59 @@ export default function PracticeCard({
       )}
 
       {practice.specialities && practice.specialities.length > 0 && (
-        <div className="mt-3 flex flex-wrap gap-1.5">
-          {practice.specialities.map((spec) => {
-            const isPersonal = spec.offeredBy === 'personal';
-            const isEquipment = spec.category === 'equipment';
-            const isReferralOnly = spec.referralType === 'referral_required';
-            const isSelfReferral = spec.referralType === 'self_referral';
-            return (
-              <span
-                key={spec.id}
-                title={spec.name}
-                className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg text-xs font-medium border ${
-                  isPersonal
-                    ? 'bg-teal-50 text-teal-950 border-teal-200'
-                    : isEquipment
-                    ? 'bg-indigo-50 text-indigo-950 border-indigo-200'
-                    : 'bg-slate-50 text-slate-900 border-slate-200'
-                }`}
+        <div className="mt-3">
+          <div className="flex flex-wrap gap-1.5">
+            {(showAllTags ? practice.specialities : practice.specialities.slice(0, 5)).map((spec) => {
+              const isPersonal = spec.offeredBy === 'personal';
+              const isEquipment = spec.category === 'equipment';
+              const isReferralOnly = spec.referralType === 'referral_required';
+              const isSelfReferral = spec.referralType === 'self_referral';
+              return (
+                <span
+                  key={spec.id}
+                  title={spec.name}
+                  className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg text-[11px] sm:text-xs font-medium border ${
+                    isPersonal
+                      ? 'bg-teal-50 text-teal-950 border-teal-200'
+                      : isEquipment
+                      ? 'bg-indigo-50 text-indigo-950 border-indigo-200'
+                      : 'bg-slate-50 text-slate-900 border-slate-200'
+                  }`}
+                >
+                  {spec.offeredBy === 'personal' ? (
+                    <span>👤</span>
+                  ) : spec.offeredBy === 'practice' ? (
+                    <span>🏥</span>
+                  ) : null}
+                  <span>{spec.name}</span>
+                  {isReferralOnly ? (
+                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-red-700 bg-red-100/70 border border-red-200 px-1.5 py-0.2 rounded-full">
+                      <span className="w-1.5 h-1.5 rounded-full bg-red-600"></span>
+                      <span>Required</span>
+                    </span>
+                  ) : isSelfReferral ? (
+                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-100/70 border border-emerald-200 px-1.5 py-0.2 rounded-full">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                      <span>Self</span>
+                    </span>
+                  ) : null}
+                </span>
+              );
+            })}
+
+            {practice.specialities.length > 5 && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowAllTags(!showAllTags);
+                }}
+                className="inline-flex items-center px-2 py-0.5 rounded-lg text-[10px] font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition-colors cursor-pointer"
               >
-                {spec.offeredBy === 'personal' ? (
-                  <span>👤</span>
-                ) : spec.offeredBy === 'practice' ? (
-                  <span>🏥</span>
-                ) : null}
-                <span>{spec.name}</span>
-                {isReferralOnly ? (
-                  <span className="inline-flex items-center gap-1 text-[10px] font-bold text-red-700 bg-red-100/70 border border-red-200 px-1.5 py-0.2 rounded-full">
-                    <span className="w-1.5 h-1.5 rounded-full bg-red-600"></span>
-                    <span>Required</span>
-                  </span>
-                ) : isSelfReferral ? (
-                  <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-100/70 border border-emerald-200 px-1.5 py-0.2 rounded-full">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
-                    <span>Self</span>
-                  </span>
-                ) : null}
-              </span>
-            );
-          })}
+                {showAllTags ? 'Show less' : `+${practice.specialities.length - 5} more`}
+              </button>
+            )}
+          </div>
         </div>
       )}
 
