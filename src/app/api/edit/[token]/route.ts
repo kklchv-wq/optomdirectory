@@ -113,14 +113,10 @@ export async function PUT(
       existingListing.city !== data.city ||
       existingListing.postcode !== data.postcode;
 
-    // Only require re-approval if core practice details changed.
-    const newStatus = practiceDetailsChanged
-      ? 'pending'
-      : (existingListing.status === 'approved' ? 'approved' : existingListing.status);
+    // Listings remain approved and published live immediately upon edit.
+    const newStatus = existingListing.status === 'rejected' ? 'rejected' : 'approved';
 
     // Execute updates inside an atomic database transaction
-    // If any error occurs during update or specialities insertion, the entire transaction rolls back
-    // and the previous version of the listing remains completely intact.
     await db.transaction(async (tx) => {
       await tx
         .update(listings)
@@ -180,41 +176,10 @@ export async function PUT(
       }
     });
 
-    if (practiceDetailsChanged) {
-      try {
-        const origin = request.headers.get('origin') || 'http://localhost:3000';
-        const editUrl = `${origin}/edit/${token}`;
-
-        await mailer.sendEmail({
-          to: data.email,
-          subject: `Listing Details Submitted for Re-Approval: ${data.practiceName}`,
-          type: 'submission_received',
-          text: `Hello ${data.contactName},
-
-Your updates to your practice details for "${data.practiceName}" have been received.
-
-Because practice identity or address details were modified, your listing has been queued for admin verification before going live.
-
-Edit link: ${editUrl}
-
-Best regards,
-Optom Referral Directory Team`,
-          metadata: {
-            listingId: existingListing.id,
-            editToken: token,
-          },
-        });
-      } catch (emailError) {
-        console.error('Failed to send edit re-approval email (non-fatal):', emailError);
-      }
-    }
-
     return NextResponse.json({
       success: true,
-      reapprovalRequired: practiceDetailsChanged,
-      message: practiceDetailsChanged
-        ? 'Practice details updated and queued for admin re-approval.'
-        : 'Profile details updated live on your listing!',
+      reapprovalRequired: false,
+      message: 'Practice profile updated live on the directory!',
       listingId: existingListing.id,
     });
   } catch (error) {

@@ -39,7 +39,7 @@ export default function FormStep4Review({ formData, updateFields }: Step4Props) 
           Step 4: Review & Confirm Submission
         </h2>
         <p className="text-xs text-slate-600 mt-1">
-          Please review your practice details and referral access settings before submitting. All listings undergo admin verification before going live.
+          Please review your practice details and referral access settings before submitting. Your practice listing will go live immediately on the directory!
         </p>
       </div>
 
@@ -54,8 +54,8 @@ export default function FormStep4Review({ formData, updateFields }: Step4Props) 
               {formData.practiceName}
             </h3>
           </div>
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200">
-            <ShieldCheck className="w-3.5 h-3.5" /> Pending Review
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
+            <ShieldCheck className="w-3.5 h-3.5" /> Instant Publishing
           </span>
         </div>
 

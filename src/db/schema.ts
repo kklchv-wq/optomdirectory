@@ -59,7 +59,7 @@ export const listings = sqliteTable('listings', {
     .default(true),
   status: text('status', { enum: ['pending', 'approved', 'rejected'] })
     .notNull()
-    .default('pending'),
+    .default('approved'),
   editToken: text('edit_token').notNull().unique(),
   rejectionReason: text('rejection_reason'),
   createdAt: integer('created_at', { mode: 'timestamp' })

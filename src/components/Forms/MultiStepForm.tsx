@@ -218,14 +218,12 @@ export default function MultiStepForm({
 
       setSubmittedResult({
         editUrl: data.editUrl || `${window.location.origin}/edit/${editToken}`,
-        reapprovalRequired: data.reapprovalRequired ?? false,
+        reapprovalRequired: false,
         slug: data.slug,
         message: data.message || (
           isEditMode
-            ? (data.reapprovalRequired === false
-                ? 'Your registered services and equipment modifications are live on your public profile immediately.'
-                : 'Your practice details have been saved and submitted for admin re-approval.')
-            : 'Your practice listing has been submitted for admin verification.'
+            ? 'Your registered practice profile details are live on the public directory.'
+            : 'Your practice listing has been published live immediately on the directory!'
         ),
       });
     } catch {
@@ -244,21 +242,15 @@ export default function MultiStepForm({
   };
 
   if (submittedResult) {
-    const isLiveUpdate = isEditMode && submittedResult.reapprovalRequired === false;
-
     return (
       <div className="max-w-xl mx-auto bg-white p-8 rounded-2xl border border-slate-200 shadow-sm text-center space-y-5">
-        <div className={`w-14 h-14 rounded-full flex items-center justify-center mx-auto ${
-          isLiveUpdate ? 'bg-emerald-100 text-emerald-700' : 'bg-teal-100 text-teal-700'
-        }`}>
+        <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto bg-emerald-100 text-emerald-700">
           <CheckCircle2 className="w-8 h-8" />
         </div>
 
         <div className="space-y-2">
           <h2 className="text-xl font-extrabold text-slate-900">
-            {isLiveUpdate
-              ? '✨ Services & Equipment Updated Live!'
-              : (isEditMode ? 'Listing Details Updated!' : 'Submission Received!')}
+            {isEditMode ? '✨ Listing Details Updated!' : '🎉 Practice Listing Published Live!'}
           </h2>
           <p className="text-sm text-slate-600 leading-relaxed">
             {submittedResult.message}

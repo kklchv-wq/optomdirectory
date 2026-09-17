@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
           description: data.description || null,
           workingDays: data.workingDays && data.workingDays.length > 0 ? JSON.stringify(data.workingDays) : null,
           subscribeUpdates: data.subscribeUpdates ?? true,
-          status: 'pending',
+          status: 'approved',
           editToken,
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -136,13 +136,13 @@ export async function POST(request: NextRequest) {
     try {
       await mailer.sendEmail({
         to: data.email,
-        subject: `Listing Submission Received: ${data.practiceName}`,
+        subject: `Listing Published: ${data.practiceName}`,
         type: 'submission_received',
         text: `Hello ${data.contactName},
 
-Thank you for submitting your practice listing for "${data.practiceName}" to the Optometrist Speciality Directory.
+Thank you for registering your practice listing for "${data.practiceName}" on the Optometrist Speciality Directory.
 
-Your listing has been queued for admin verification. Once reviewed, your listing will be published.
+Your practice listing is live and visible immediately on the directory map and search!
 
 You can return to edit or update your practice listing at any time using your secret edit link:
 ${editUrl}
