@@ -142,31 +142,10 @@ export default function FilterChips({
       {/* Main Options Panel (Hidden when collapsed) */}
       {!isCollapsed && (
         <div className="space-y-2.5">
-          {/* Mobile-optimized Filter Controls Bar (Search + Category Filter Tabs) */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 bg-white p-2 rounded-lg border border-slate-200/80">
-            {/* Quick Search Bar */}
-            <div className="relative flex-1">
-              <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search tags (e.g. OCT, Dry Eye, IP)..."
-                className="w-full pl-8 pr-7 py-1 bg-slate-50 border border-slate-200 rounded-md text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-teal-500 focus:bg-white"
-              />
-              {searchQuery && (
-                <button
-                  type="button"
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              )}
-            </div>
-
-            {/* Category Filter Pills */}
-            <div className="flex items-center gap-1 self-center shrink-0">
+          {/* Category Filter Pills */}
+          <div className="flex items-center justify-between gap-2 bg-white p-2 rounded-lg border border-slate-200/80">
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Category:</span>
+            <div className="flex items-center gap-1">
               <button
                 type="button"
                 onClick={() => setActiveCategory('all')}

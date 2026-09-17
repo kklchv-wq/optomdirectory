@@ -242,28 +242,9 @@ export default function FormStep3Specialities({
         </div>
       </div>
 
-      {/* Quick Search & Category Filter Tabs */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 bg-slate-100/90 p-2.5 rounded-xl border border-slate-200">
-        <div className="relative flex-1">
-          <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-          <input
-            type="text"
-            value={stepSearch}
-            onChange={(e) => setStepSearch(e.target.value)}
-            placeholder="Search tags (e.g. OCT, Dry Eye, IP)..."
-            className="w-full pl-8 pr-7 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500"
-          />
-          {stepSearch && (
-            <button
-              type="button"
-              onClick={() => setStepSearch('')}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          )}
-        </div>
-
+      {/* Category Filter Tabs */}
+      <div className="flex items-center justify-between gap-2.5 bg-slate-100/90 p-2.5 rounded-xl border border-slate-200">
+        <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Filter View:</span>
         <div className="flex items-center gap-1 overflow-x-auto pb-0.5 sm:pb-0 shrink-0">
           <button
             type="button"
