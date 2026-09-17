@@ -182,8 +182,8 @@ export default function FilterChips({
             </div>
           </div>
 
-          {/* Options Grid with Constrained Mobile Scroll Height */}
-          <div className="max-h-56 sm:max-h-80 overflow-y-auto pr-1 space-y-3 custom-scrollbar">
+          {/* Options Grid - Fully Expanded (No internal scroll window) */}
+          <div className="space-y-3">
             {filteredSpecialities.length === 0 ? (
               <div className="py-6 text-center text-xs text-slate-500 bg-white rounded-lg border border-slate-200">
                 No tags match "{searchQuery}".

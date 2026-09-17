@@ -493,8 +493,8 @@ export default function FormStep3Specialities({
         </div>
       )}
 
-      {/* Services & Equipment Tag Cards (Scrollable on Mobile) */}
-      <div className="max-h-[55vh] sm:max-h-none overflow-y-auto pr-1 space-y-6 custom-scrollbar">
+      {/* Services & Equipment Tag Cards (Fully Expanded, No internal scroll window) */}
+      <div className="space-y-6">
         {/* 1. Clinical Services & Procedures */}
         <div className="space-y-4">
           <h3 className="text-xs font-bold text-teal-950 flex items-center gap-1.5 uppercase tracking-wider">
