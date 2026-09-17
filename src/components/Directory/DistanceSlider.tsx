@@ -22,8 +22,8 @@ export default function DistanceSlider({
   const isNationwide = radiusMiles >= 500;
 
   return (
-    <div className="flex items-center gap-2 w-full">
-      <div className="flex items-center gap-1.5 flex-1 min-w-0">
+    <div className="flex items-center gap-2.5 w-full">
+      <div className="flex items-center gap-2 flex-1 min-w-0">
         <span className="text-xs font-bold text-slate-700 shrink-0">
           Radius:
         </span>
@@ -35,10 +35,10 @@ export default function DistanceSlider({
           step={5}
           value={radiusMiles > 500 ? 500 : radiusMiles}
           onChange={(e) => onChange(parseInt(e.target.value, 10))}
-          className="flex-1 min-w-12 h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-teal-700"
+          className="flex-1 min-w-20 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-teal-700"
         />
-        <span className="text-[11px] font-extrabold text-teal-800 shrink-0 min-w-10 text-right font-mono">
-          {isNationwide ? 'UK Wide' : `${radiusMiles}m`}
+        <span className="text-xs font-extrabold text-teal-800 shrink-0 min-w-12 text-right font-mono">
+          {isNationwide ? 'UK Wide' : `${radiusMiles} mi`}
         </span>
       </div>
 
