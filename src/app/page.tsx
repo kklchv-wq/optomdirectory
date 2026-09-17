@@ -2,9 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Header from '@/components/UI/Header';
-import PostcodeSearch from '@/components/Directory/PostcodeSearch';
 import FilterChips from '@/components/Directory/FilterChips';
-import DistanceSlider from '@/components/Directory/DistanceSlider';
 import PracticeList from '@/components/Directory/PracticeList';
 import MapLibreMap from '@/components/Map/MapLibreMap';
 import MobileViewToggle from '@/components/UI/MobileViewToggle';
@@ -119,31 +117,17 @@ export default function HomePage() {
       />
 
       {/* Search & Filter Header */}
-      <section className="bg-white border-b border-slate-200 py-4 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto space-y-4">
-          {/* Step 1: Select Services & Equipment Filters */}
+      <section className="bg-white border-b border-slate-200 py-3.5 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
           <FilterChips
             specialities={specialities}
             selectedSlugs={selectedSpecialitySlugs}
             onChange={setSelectedSpecialitySlugs}
+            location={location}
+            onLocationChange={setLocation}
+            radiusMiles={radiusMiles}
+            onRadiusChange={setRadiusMiles}
           />
-
-          {/* Step 2: Set Location & Distance Radius (Ultra-Compact 1-line Strip) */}
-          <div className="bg-slate-100/80 px-3 py-2 rounded-xl border border-slate-200/90 flex flex-col md:flex-row items-center gap-3">
-            <div className="w-full md:w-5/12">
-              <PostcodeSearch
-                onLocationChange={setLocation}
-                currentLocationLabel={location.label}
-              />
-            </div>
-
-            <div className="w-full md:w-7/12 border-t md:border-t-0 md:border-l border-slate-300/60 pt-2 md:pt-0 md:pl-3">
-              <DistanceSlider
-                radiusMiles={radiusMiles}
-                onChange={setRadiusMiles}
-              />
-            </div>
-          </div>
         </div>
       </section>
 

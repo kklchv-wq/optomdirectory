@@ -1,7 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Speciality } from '@/types';
+import { GeoLocation, Speciality } from '@/types';
+import PostcodeSearch from '@/components/Directory/PostcodeSearch';
+import DistanceSlider from '@/components/Directory/DistanceSlider';
 import {
   Stethoscope,
   Microchip,
@@ -9,15 +11,16 @@ import {
   RotateCcw,
   ChevronDown,
   ChevronUp,
-  Filter,
-  Search,
-  X,
 } from 'lucide-react';
 
 interface FilterChipsProps {
   specialities: Speciality[];
   selectedSlugs: string[];
   onChange: (selectedSlugs: string[]) => void;
+  location?: GeoLocation;
+  onLocationChange?: (location: GeoLocation) => void;
+  radiusMiles?: number;
+  onRadiusChange?: (radius: number) => void;
 }
 
 function groupBySubGroup(items: Speciality[]) {
@@ -36,6 +39,10 @@ export default function FilterChips({
   specialities,
   selectedSlugs,
   onChange,
+  location,
+  onLocationChange,
+  radiusMiles,
+  onRadiusChange,
 }: FilterChipsProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -75,15 +82,12 @@ export default function FilterChips({
     setActiveCategory('all');
   };
 
-  const selectedSpecialities = specialities.filter((s) =>
-    selectedSlugs.includes(s.slug)
-  );
-
   return (
     <div className="w-full bg-slate-50/90 p-2.5 sm:p-3 rounded-xl border border-slate-200/90 shadow-2xs space-y-2.5">
-      {/* Top Bar: Category Filter Pills, Reset Button, and Mobile-Only Minimise Toggle */}
-      <div className="flex items-center justify-between border-b border-slate-200/80 pb-2 gap-2 flex-wrap sm:flex-nowrap">
-        <div className="flex items-center gap-1.5 flex-wrap">
+      {/* Top Bar: Category Filter Pills on Left, Postcode & Radius Filters on Upper Right */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-2.5 border-b border-slate-200/80 pb-2.5">
+        {/* Left: Category Filter Pills */}
+        <div className="flex items-center gap-1.5 flex-wrap shrink-0">
           <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Category:</span>
           <div className="flex items-center gap-1">
             <button
@@ -122,36 +126,57 @@ export default function FilterChips({
           </div>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0 ml-auto">
-          {selectedSlugs.length > 0 && (
-            <button
-              type="button"
-              onClick={clearAll}
-              className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] text-teal-800 hover:text-teal-950 bg-teal-50 hover:bg-teal-100 border border-teal-200 font-bold rounded-lg transition-colors cursor-pointer"
-            >
-              <RotateCcw className="w-3 h-3" />
-              <span>Reset ({selectedSlugs.length})</span>
-            </button>
+        {/* Upper Right Controls: Postcode Search + Distance Radius + Reset + Mobile Minimise */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2.5 flex-1 lg:flex-initial lg:justify-end">
+          {onLocationChange && (
+            <div className="w-full sm:w-60 shrink-0">
+              <PostcodeSearch
+                onLocationChange={onLocationChange}
+                currentLocationLabel={location?.label}
+              />
+            </div>
           )}
 
-          {/* Minimise Button - Mobile Phones ONLY (Hidden on Desktop / Web) */}
-          <button
-            type="button"
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            className="sm:hidden inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:text-slate-950 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors cursor-pointer shadow-2xs"
-          >
-            {isCollapsed ? (
-              <>
-                <span>Show Options</span>
-                <ChevronDown className="w-3 h-3 text-slate-500" />
-              </>
-            ) : (
-              <>
-                <span>Hide Options</span>
-                <ChevronUp className="w-3 h-3 text-slate-500" />
-              </>
+          {radiusMiles !== undefined && onRadiusChange && (
+            <div className="w-full sm:w-52 shrink-0 bg-white px-2 py-0.5 rounded-lg border border-slate-200/90 shadow-2xs flex items-center">
+              <DistanceSlider
+                radiusMiles={radiusMiles}
+                onChange={onRadiusChange}
+              />
+            </div>
+          )}
+
+          <div className="flex items-center gap-1.5 shrink-0 ml-auto sm:ml-0">
+            {selectedSlugs.length > 0 && (
+              <button
+                type="button"
+                onClick={clearAll}
+                className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] text-teal-800 hover:text-teal-950 bg-teal-50 hover:bg-teal-100 border border-teal-200 font-bold rounded-lg transition-colors cursor-pointer"
+              >
+                <RotateCcw className="w-3 h-3" />
+                <span>Reset ({selectedSlugs.length})</span>
+              </button>
             )}
-          </button>
+
+            {/* Minimise Button - Mobile Phones ONLY (Hidden on Desktop / Web) */}
+            <button
+              type="button"
+              onClick={() => setIsCollapsed(!isCollapsed)}
+              className="sm:hidden inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:text-slate-950 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors cursor-pointer shadow-2xs"
+            >
+              {isCollapsed ? (
+                <>
+                  <span>Show Options</span>
+                  <ChevronDown className="w-3 h-3 text-slate-500" />
+                </>
+              ) : (
+                <>
+                  <span>Hide Options</span>
+                  <ChevronUp className="w-3 h-3 text-slate-500" />
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </div>
 
