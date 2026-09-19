@@ -101,7 +101,7 @@ export default function PostcodeSearch({
   return (
     <div className="w-full space-y-1">
       <form onSubmit={handlePostcodeSubmit} className="flex items-center gap-1.5 w-full">
-        <div className="relative flex-1 min-w-[130px] max-w-[170px] sm:max-w-[190px]">
+        <div className="relative flex-1 min-w-[140px] w-full">
           <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400">
             <Search className="h-3.5 w-3.5 text-slate-400 shrink-0" />
           </div>
