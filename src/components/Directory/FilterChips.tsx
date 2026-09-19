@@ -127,9 +127,9 @@ export default function FilterChips({
         </div>
 
         {/* Upper Right Controls: Postcode Search + Distance Radius + Reset + Mobile Minimise */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 flex-1 flex-wrap lg:flex-nowrap min-w-0 max-w-full lg:justify-end">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2.5 flex-wrap lg:flex-nowrap shrink max-w-full lg:justify-end">
           {onLocationChange && (
-            <div className="flex-1 min-w-[240px] sm:min-w-[280px] max-w-md">
+            <div className="w-full sm:w-auto max-w-[280px] shrink-0">
               <PostcodeSearch
                 onLocationChange={onLocationChange}
                 currentLocationLabel={location?.label}
@@ -138,7 +138,7 @@ export default function FilterChips({
           )}
 
           {radiusMiles !== undefined && onRadiusChange && (
-            <div className="flex-1 min-w-[180px] sm:min-w-[220px] max-w-xs bg-white px-2.5 py-1 rounded-xl border border-slate-200 shadow-2xs flex items-center">
+            <div className="w-full sm:w-auto max-w-[240px] shrink-0 bg-white px-2.5 py-1 rounded-xl border border-slate-200 shadow-2xs flex items-center">
               <DistanceSlider
                 radiusMiles={radiusMiles}
                 onChange={onRadiusChange}
