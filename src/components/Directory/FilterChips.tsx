@@ -127,9 +127,9 @@ export default function FilterChips({
         </div>
 
         {/* Right: Inline Postcode Search + Radius Slider + Reset */}
-        <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap flex-1 min-w-0 justify-start lg:justify-end">
+        <div className="flex items-center gap-2 lg:gap-2.5 flex-wrap lg:flex-nowrap flex-1 min-w-0 justify-start lg:justify-end">
           {onLocationChange && (
-            <div className="flex-1 min-w-[170px] max-w-[260px]">
+            <div className="flex-1 min-w-[260px] sm:min-w-[320px] max-w-[420px]">
               <PostcodeSearch
                 onLocationChange={onLocationChange}
                 currentLocationLabel={location?.label}
@@ -138,7 +138,7 @@ export default function FilterChips({
           )}
 
           {radiusMiles !== undefined && onRadiusChange && (
-            <div className="w-[150px] sm:w-[190px] lg:w-[210px] bg-white px-2.5 py-1.5 rounded-xl border border-slate-200 shadow-2xs flex items-center shrink-0">
+            <div className="w-[160px] sm:w-[190px] lg:w-[210px] bg-white px-2.5 py-1.5 rounded-xl border border-slate-200 shadow-2xs flex items-center shrink-0">
               <DistanceSlider
                 radiusMiles={radiusMiles}
                 onChange={onRadiusChange}
