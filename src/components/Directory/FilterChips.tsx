@@ -84,8 +84,8 @@ export default function FilterChips({
 
   return (
     <div className="w-full max-w-full overflow-hidden bg-slate-50/90 p-2.5 sm:p-3 rounded-xl border border-slate-200/90 shadow-2xs space-y-2.5">
-      {/* Top Bar: Category Filter Pills on Left, Postcode & Radius Filters on Upper Right */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-2.5 border-b border-slate-200/80 pb-2.5 max-w-full">
+      {/* Top Bar: Category Filter Pills on Left, Reset & Controls on Right */}
+      <div className="flex items-center justify-between border-b border-slate-200/80 pb-2.5 gap-2 flex-wrap">
         {/* Left: Category Filter Pills */}
         <div className="flex items-center gap-1.5 flex-wrap shrink-0">
           <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Category:</span>
@@ -126,59 +126,59 @@ export default function FilterChips({
           </div>
         </div>
 
-        {/* Upper Right Controls: Postcode Search + Distance Radius + Reset + Mobile Minimise */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 flex-1 flex-wrap lg:flex-nowrap min-w-0 max-w-full lg:justify-end">
-          {onLocationChange && (
-            <div className="flex-1 min-w-[200px] max-w-xs md:max-w-sm">
-              <PostcodeSearch
-                onLocationChange={onLocationChange}
-                currentLocationLabel={location?.label}
-              />
-            </div>
-          )}
-
-          {radiusMiles !== undefined && onRadiusChange && (
-            <div className="flex-1 min-w-[180px] max-w-xs bg-white px-2.5 py-1.5 rounded-xl border border-slate-200 shadow-2xs flex items-center">
-              <DistanceSlider
-                radiusMiles={radiusMiles}
-                onChange={onRadiusChange}
-                showPresets={false}
-              />
-            </div>
-          )}
-
-          <div className="flex items-center gap-1.5 shrink-0 ml-auto sm:ml-0">
-            {selectedSlugs.length > 0 && (
-              <button
-                type="button"
-                onClick={clearAll}
-                className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] text-teal-800 hover:text-teal-950 bg-teal-50 hover:bg-teal-100 border border-teal-200 font-bold rounded-lg transition-colors cursor-pointer shrink-0"
-              >
-                <RotateCcw className="w-3 h-3" />
-                <span>Reset ({selectedSlugs.length})</span>
-              </button>
-            )}
-
-            {/* Minimise Toggle Button - Mobile Phones ONLY */}
+        <div className="flex items-center gap-1.5 shrink-0 ml-auto">
+          {selectedSlugs.length > 0 && (
             <button
               type="button"
-              onClick={() => setIsCollapsed(!isCollapsed)}
-              className="sm:hidden inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:text-slate-950 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors cursor-pointer shadow-2xs shrink-0"
+              onClick={clearAll}
+              className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] text-teal-800 hover:text-teal-950 bg-teal-50 hover:bg-teal-100 border border-teal-200 font-bold rounded-lg transition-colors cursor-pointer shrink-0"
             >
-              {isCollapsed ? (
-                <>
-                  <span>Show Options</span>
-                  <ChevronDown className="w-3 h-3 text-slate-500" />
-                </>
-              ) : (
-                <>
-                  <span>Hide Options</span>
-                  <ChevronUp className="w-3 h-3 text-slate-500" />
-                </>
-              )}
+              <RotateCcw className="w-3 h-3" />
+              <span>Reset ({selectedSlugs.length})</span>
             </button>
-          </div>
+          )}
+
+          {/* Minimise Toggle Button - Mobile Phones ONLY */}
+          <button
+            type="button"
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="sm:hidden inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:text-slate-950 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors cursor-pointer shadow-2xs shrink-0"
+          >
+            {isCollapsed ? (
+              <>
+                <span>Show Options</span>
+                <ChevronDown className="w-3 h-3 text-slate-500" />
+              </>
+            ) : (
+              <>
+                <span>Hide Options</span>
+                <ChevronUp className="w-3 h-3 text-slate-500" />
+              </>
+            )}
+          </button>
         </div>
+      </div>
+
+      {/* Row 2: Postcode Search + Distance Radius Bar (100% Linear Smooth Scaling) */}
+      <div className="flex items-center justify-between gap-2.5 pt-0.5 w-full">
+        {onLocationChange && (
+          <div className="flex-1 min-w-0 max-w-md">
+            <PostcodeSearch
+              onLocationChange={onLocationChange}
+              currentLocationLabel={location?.label}
+            />
+          </div>
+        )}
+
+        {radiusMiles !== undefined && onRadiusChange && (
+          <div className="w-[160px] sm:w-[220px] md:w-[260px] bg-white px-2.5 py-1.5 rounded-xl border border-slate-200 shadow-2xs flex items-center shrink-0">
+            <DistanceSlider
+              radiusMiles={radiusMiles}
+              onChange={onRadiusChange}
+              showPresets={false}
+            />
+          </div>
+        )}
       </div>
 
       {/* Main Options Panel (Hidden on mobile when collapsed, Always Visible on Web) */}
