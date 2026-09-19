@@ -112,8 +112,8 @@ export default function PostcodeSearch({
               setPostcode(e.target.value);
               if (errorMessage) setErrorMessage(null);
             }}
-            placeholder="UK Postcode (e.g. AB10 1JJ)"
-            className="w-full min-w-0 pl-8.5 pr-2.5 py-1.5 bg-white border border-slate-300 rounded-xl text-xs leading-normal font-medium text-slate-700 placeholder:text-slate-400 placeholder:font-normal uppercase shadow-2xs focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors"
+            placeholder="e.g. AB10 1JJ"
+            className="w-full min-w-0 pl-9 pr-2.5 py-1.5 bg-white border border-slate-300 rounded-xl text-xs leading-normal font-medium text-slate-700 placeholder:text-slate-400 placeholder:font-normal placeholder:normal-case uppercase shadow-2xs focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors"
             aria-label="Enter UK postcode"
           />
         </div>
