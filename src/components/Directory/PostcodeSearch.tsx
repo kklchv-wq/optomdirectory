@@ -103,7 +103,7 @@ export default function PostcodeSearch({
       <form onSubmit={handlePostcodeSubmit} className="flex items-center gap-1.5 w-full">
         <div className="relative flex-1 min-w-[140px]">
           <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400">
-            <Search className="h-3.5 w-3.5 text-slate-400" />
+            <Search className="h-3.5 w-3.5 text-slate-400 shrink-0" />
           </div>
           <input
             type="text"
@@ -113,7 +113,7 @@ export default function PostcodeSearch({
               if (errorMessage) setErrorMessage(null);
             }}
             placeholder="UK Postcode (e.g. AB10 1JJ)"
-            className="w-full pl-7.5 pr-2.5 py-1.5 bg-white border border-slate-300 rounded-xl text-xs font-medium text-slate-700 placeholder:text-slate-400 placeholder:font-normal uppercase shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all"
+            className="w-full min-w-0 pl-8.5 pr-2.5 py-1.5 bg-white border border-slate-300 rounded-xl text-xs leading-normal font-medium text-slate-700 placeholder:text-slate-400 placeholder:font-normal uppercase shadow-2xs focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors"
             aria-label="Enter UK postcode"
           />
         </div>
