@@ -131,7 +131,25 @@ async function initDatabaseTables() {
         expires_at INTEGER NOT NULL,
         created_at INTEGER NOT NULL
       );
+
+      CREATE TABLE IF NOT EXISTS admin_settings (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        password_hash TEXT NOT NULL,
+        two_factor_pin_hash TEXT NOT NULL
+      );
     `);
+
+    // Ensure admin_settings is seeded
+    try {
+      const existingSettings = await client.execute(`SELECT COUNT(*) as count FROM admin_settings`);
+      if (Number(existingSettings.rows[0].count) === 0) {
+        const defaultPass = '$2b$10$8yJXqaclYkJN6qwubzWHm..Q7l44MGQVlCbInh1MTl8C5pXhMsnCS'; // admin123
+        const defaultPin = '$2b$10$C415zBOfKIM9LiS9DTJ0i.JG0kX1EFn.wBvcysF01zp5S29qeFDcW'; // 000000
+        await client.execute(`INSERT INTO admin_settings (password_hash, two_factor_pin_hash) VALUES ('${defaultPass}', '${defaultPin}')`);
+      }
+    } catch (e) {
+      console.error('Error seeding admin_settings:', e);
+    }
 
     // Safely ensure listing_specialities offered_by & referral_type columns are nullable
     try {
