@@ -106,6 +106,43 @@ export default function PracticeList({
     );
   }
 
+  // If no tags are selected, prompt the user to join the directory or select a tag
+  if (selectedSpecialitiesCount === 0) {
+    return (
+      <div className="py-8 px-6 text-center bg-white border border-slate-200 rounded-2xl shadow-xs space-y-6">
+        <div className="w-12 h-12 rounded-full bg-teal-50 text-teal-700 border border-teal-200 flex items-center justify-center mx-auto shadow-2xs">
+          <Building2 className="w-6 h-6" />
+        </div>
+
+        <div className="max-w-md mx-auto space-y-2">
+          <h3 className="text-lg font-extrabold text-slate-900 tracking-tight">
+            Welcome to the UK Optometry Speciality Directory
+          </h3>
+          <p className="text-xs text-slate-600 leading-relaxed">
+            Select a clinical speciality above to search for registered practitioners, or be the first in your region to register your specialized procedures, equipment, and referral details.
+          </p>
+        </div>
+
+        <div className="pt-1 flex flex-col sm:flex-row items-center justify-center gap-3">
+          <Link
+            href="/submit"
+            className="inline-flex items-center gap-1.5 px-4 py-2 bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs rounded-xl shadow-2xs transition-colors"
+          >
+            <PlusCircle className="w-4 h-4" />
+            <span>Register a Practice</span>
+          </Link>
+          <Link
+            href="/about"
+            className="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-xs rounded-xl transition-colors"
+          >
+            <Info className="w-4 h-4 text-slate-600" />
+            <span>About Directory</span>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   // 0 Results State: Active Filter vs No Practices Registered Yet
   if (practices.length === 0) {
     if (hasActiveFilters) {

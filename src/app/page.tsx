@@ -52,13 +52,17 @@ export default function HomePage() {
     async function fetchListings() {
       setLoading(true);
       try {
+        if (selectedSpecialitySlugs.length === 0) {
+          setPractices([]);
+          setSelectedPractice(null);
+          return;
+        }
+
         const params = new URLSearchParams();
         params.set('lat', location.lat.toString());
         params.set('lng', location.lng.toString());
         params.set('radius', radiusMiles.toString());
-        if (selectedSpecialitySlugs.length > 0) {
-          params.set('specialities', selectedSpecialitySlugs.join(','));
-        }
+        params.set('specialities', selectedSpecialitySlugs.join(','));
 
         const res = await fetch(`/api/listings?${params.toString()}`);
         if (res.ok) {
