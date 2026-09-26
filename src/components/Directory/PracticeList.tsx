@@ -129,7 +129,7 @@ export default function PracticeList({
             className="inline-flex items-center gap-1.5 px-4 py-2 bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs rounded-xl shadow-2xs transition-colors"
           >
             <PlusCircle className="w-4 h-4" />
-            <span>Register a Practice</span>
+            <span>Join as Practitioner</span>
           </Link>
           <Link
             href="/about"
@@ -243,7 +243,7 @@ export default function PracticeList({
             className="inline-flex items-center gap-1.5 px-4 py-2 bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs rounded-xl shadow-2xs transition-colors"
           >
             <PlusCircle className="w-4 h-4" />
-            <span>Register a Practice</span>
+            <span>Join as Practitioner</span>
           </Link>
           <Link
             href="/about"
