@@ -105,8 +105,24 @@ export default function HomePage() {
     }
   }, []);
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Optom Directory',
+    url: 'https://www.optomdirectory.co.uk/',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: 'https://www.optomdirectory.co.uk/?tag={search_term_string}',
+      'query-input': 'required name=search_term_string',
+    },
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Header
         onSelectTag={(slug) => {
           setSelectedSpecialitySlugs((prev) =>

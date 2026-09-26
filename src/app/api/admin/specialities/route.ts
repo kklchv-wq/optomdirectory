@@ -7,14 +7,10 @@ import { specialities } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { generateSlug } from '@/lib/slug';
 
-function checkAdminAuth(request: NextRequest): boolean {
-  const adminCookie = request.cookies.get('admin_session')?.value;
-  const adminHeader = request.headers.get('x-admin-password');
-  return adminCookie === 'authenticated' || adminHeader === 'admin123';
-}
+import { verifyAdminSession } from '@/lib/adminAuth';
 
 export async function POST(request: NextRequest) {
-  if (!checkAdminAuth(request)) {
+  if (!(await verifyAdminSession(request))) {
     return NextResponse.json({ error: 'Unauthorized admin access' }, { status: 401 });
   }
 
@@ -64,7 +60,7 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
-  if (!checkAdminAuth(request)) {
+  if (!(await verifyAdminSession(request))) {
     return NextResponse.json({ error: 'Unauthorized admin access' }, { status: 401 });
   }
 
@@ -100,7 +96,7 @@ export async function PUT(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
-  if (!checkAdminAuth(request)) {
+  if (!(await verifyAdminSession(request))) {
     return NextResponse.json({ error: 'Unauthorized admin access' }, { status: 401 });
   }
 
@@ -127,7 +123,7 @@ export async function DELETE(request: NextRequest) {
 }
 
 export async function PATCH(request: NextRequest) {
-  if (!checkAdminAuth(request)) {
+  if (!(await verifyAdminSession(request))) {
     return NextResponse.json({ error: 'Unauthorized admin access' }, { status: 401 });
   }
 

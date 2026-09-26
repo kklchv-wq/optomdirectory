@@ -9,20 +9,10 @@ import { lookupUkPostcode } from '@/lib/geocoding';
 import fs from 'fs';
 import path from 'path';
 
-function verifyAdminPassword(request: NextRequest): boolean {
-  const authHeader = (request.headers.get('x-admin-password') || '').trim();
-  const queryPass = (new URL(request.url).searchParams.get('password') || '').trim();
-  const expectedPassword = (process.env.ADMIN_PASSWORD || 'admin123').trim();
-  return (
-    authHeader === expectedPassword ||
-    authHeader === 'admin123' ||
-    queryPass === expectedPassword ||
-    queryPass === 'admin123'
-  );
-}
+import { verifyAdminSession } from '@/lib/adminAuth';
 
 export async function GET(request: NextRequest) {
-  if (!verifyAdminPassword(request)) {
+  if (!(await verifyAdminSession(request))) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -143,7 +133,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  if (!verifyAdminPassword(request)) {
+  if (!(await verifyAdminSession(request))) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

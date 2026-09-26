@@ -6,14 +6,10 @@ import { db } from '@/db';
 import { listings } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
-function verifyAdminPassword(request: NextRequest): boolean {
-  const authHeader = (request.headers.get('x-admin-password') || '').trim();
-  const expectedPassword = (process.env.ADMIN_PASSWORD || 'admin123').trim();
-  return authHeader === expectedPassword || authHeader === 'admin123';
-}
+import { verifyAdminSession } from '@/lib/adminAuth';
 
 export async function POST(request: NextRequest) {
-  if (!verifyAdminPassword(request)) {
+  if (!(await verifyAdminSession(request))) {
     return NextResponse.json({ error: 'Unauthorized admin password' }, { status: 401 });
   }
 

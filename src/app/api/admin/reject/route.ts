@@ -7,17 +7,10 @@ import { listings } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { mailer } from '@/lib/mailer';
 
-/**
- * PRODUCTION TODO: Replace single-password auth check with robust Auth solution (e.g. NextAuth/Lucia)
- */
-function verifyAdminPassword(request: NextRequest): boolean {
-  const authHeader = (request.headers.get('x-admin-password') || '').trim();
-  const expectedPassword = (process.env.ADMIN_PASSWORD || 'admin123').trim();
-  return authHeader === expectedPassword || authHeader === 'admin123';
-}
+import { verifyAdminSession } from '@/lib/adminAuth';
 
 export async function POST(request: NextRequest) {
-  if (!verifyAdminPassword(request)) {
+  if (!(await verifyAdminSession(request))) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

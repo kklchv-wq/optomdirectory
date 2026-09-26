@@ -121,6 +121,12 @@ export const passwordResetTokens = sqliteTable('password_reset_tokens', {
     .$defaultFn(() => new Date()),
 });
 
+export const adminSettings = sqliteTable('admin_settings', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  passwordHash: text('password_hash').notNull(),
+  twoFactorPinHash: text('two_factor_pin_hash').notNull(),
+});
+
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Session = typeof sessions.$inferSelect;
@@ -134,4 +140,5 @@ export type NewTagAlert = typeof tagAlerts.$inferInsert;
 export type ContactMessage = typeof contactMessages.$inferSelect;
 export type NewContactMessage = typeof contactMessages.$inferInsert;
 export type PasswordResetToken = typeof passwordResetTokens.$inferSelect;
-
+export type AdminSettings = typeof adminSettings.$inferSelect;
+export type NewAdminSettings = typeof adminSettings.$inferInsert;

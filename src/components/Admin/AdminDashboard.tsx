@@ -28,13 +28,15 @@ import {
 } from 'lucide-react';
 
 export default function AdminDashboard() {
-  const [password, setPassword] = useState('admin123');
+  const [authStep, setAuthStep] = useState<'password' | 'pin'>('password');
   const [authenticated, setAuthenticated] = useState(false);
-  const [adminPasswordInput, setAdminPasswordInput] = useState('admin123');
+  const [passwordInput, setPasswordInput] = useState('');
+  const [pinInput, setPinInput] = useState('');
   const [authError, setAuthError] = useState<string | null>(null);
+  const [authLoading, setAuthLoading] = useState(false);
 
-  // Main Section Tab: 'listings' | 'tags' | 'backup'
-  const [mainSection, setMainSection] = useState<'listings' | 'tags' | 'backup'>('listings');
+  // Main Section Tab: 'listings' | 'tags' | 'backup' | 'security'
+  const [mainSection, setMainSection] = useState<'listings' | 'tags' | 'backup' | 'security'>('listings');
 
   // Backup & Map Sync State
   const [backupLoading, setBackupLoading] = useState(false);
@@ -81,18 +83,15 @@ export default function AdminDashboard() {
   const [editCustomGroup, setEditCustomGroup] = useState('');
   const [editDesc, setEditDesc] = useState('');
 
-  const fetchAdminListings = async (passToUse?: string) => {
-    const activePass = passToUse || password || 'admin123';
+  const fetchAdminListings = async () => {
     setLoadingListings(true);
     setAuthError(null);
 
     try {
-      const res = await fetch(`/api/admin/listings?status=${activeTab}`, {
-        headers: { 'x-admin-password': activePass },
-      });
-
+      const res = await fetch(`/api/admin/listings?status=${activeTab}`);
       if (res.status === 401) {
-        setAuthError('Incorrect admin password.');
+        setAuthenticated(false);
+        setAuthStep('password');
         return;
       }
 
@@ -137,14 +136,65 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const pass = adminPasswordInput.trim() || 'admin123';
-    setPassword(pass);
-    setAuthenticated(true);
-    document.cookie = `admin_session=authenticated; path=/; max-age=86400`;
-    fetchAdminListings(pass);
-    fetchSpecialities();
+    setAuthError(null);
+    setAuthLoading(true);
+    
+    try {
+      const res = await fetch('/api/admin/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: passwordInput })
+      });
+      const data = await res.json();
+      
+      if (res.ok) {
+        setAuthStep('pin');
+        setPinInput('');
+      } else {
+        setAuthError(data.error || 'Invalid password');
+      }
+    } catch {
+      setAuthError('Network error');
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  const handlePinSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthError(null);
+    setAuthLoading(true);
+    
+    try {
+      const res = await fetch('/api/admin/auth/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pin: pinInput })
+      });
+      const data = await res.json();
+      
+      if (res.ok) {
+        setAuthenticated(true);
+        fetchAdminListings();
+        fetchSpecialities();
+      } else {
+        setAuthError(data.error || 'Invalid PIN');
+      }
+    } catch {
+      setAuthError('Network error');
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    await fetch('/api/admin/auth/logout', { method: 'POST' });
+    setAuthenticated(false);
+    setAuthStep('password');
+    setPasswordInput('');
+    setPinInput('');
   };
 
   useEffect(() => {
@@ -164,7 +214,6 @@ export default function AdminDashboard() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-admin-password': password || 'admin123',
         },
         body: JSON.stringify({ listingId: id }),
       });
@@ -186,7 +235,6 @@ export default function AdminDashboard() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-admin-password': password || 'admin123',
         },
         body: JSON.stringify({ listingId: id, rejectionReason }),
       });
@@ -216,9 +264,6 @@ export default function AdminDashboard() {
     try {
       const res = await fetch(`/api/admin/listings?id=${id}`, {
         method: 'DELETE',
-        headers: {
-          'x-admin-password': password || 'admin123',
-        },
       });
 
       if (res.ok) {
@@ -360,7 +405,7 @@ export default function AdminDashboard() {
           </div>
           <h2 className="text-xl font-extrabold text-slate-900">Admin Area Authentication</h2>
           <p className="text-xs text-slate-600">
-            Enter administrator password (default: <code className="bg-slate-100 px-1 py-0.5 rounded font-mono font-bold text-slate-900">admin123</code>).
+            {authStep === 'password' ? 'Enter administrator password.' : 'Enter your 6-digit PIN code.'}
           </p>
         </div>
 
@@ -370,28 +415,61 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        <form onSubmit={handleLogin} className="space-y-4">
-          <div>
-            <label htmlFor="adminPassword" className="block text-xs font-semibold text-slate-700">
-              Admin Password
-            </label>
-            <input
-              id="adminPassword"
-              type="password"
-              value={adminPasswordInput}
-              onChange={(e) => setAdminPasswordInput(e.target.value)}
-              placeholder="admin123"
-              className="mt-1 w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-semibold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-teal-500"
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="w-full py-3 bg-teal-700 hover:bg-teal-800 text-white font-bold text-sm rounded-xl shadow-md transition-all active:scale-[0.98] cursor-pointer"
-          >
-            Access Admin Area →
-          </button>
-        </form>
+        {authStep === 'password' ? (
+          <form onSubmit={handlePasswordSubmit} className="space-y-4">
+            <div>
+              <label htmlFor="passwordInput" className="block text-xs font-semibold text-slate-700">
+                Admin Password
+              </label>
+              <input
+                id="passwordInput"
+                type="password"
+                value={passwordInput}
+                onChange={(e) => setPasswordInput(e.target.value)}
+                placeholder="Enter password..."
+                className="mt-1 w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-semibold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-teal-500"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={authLoading}
+              className="w-full py-3 bg-teal-700 hover:bg-teal-800 text-white font-bold text-sm rounded-xl shadow-md transition-all active:scale-[0.98] cursor-pointer disabled:opacity-50"
+            >
+              {authLoading ? 'Verifying...' : 'Next Step →'}
+            </button>
+          </form>
+        ) : (
+          <form onSubmit={handlePinSubmit} className="space-y-4">
+            <div>
+              <label htmlFor="pinInput" className="block text-xs font-semibold text-slate-700">
+                6-Digit PIN
+              </label>
+              <input
+                id="pinInput"
+                type="password"
+                maxLength={6}
+                value={pinInput}
+                onChange={(e) => setPinInput(e.target.value)}
+                placeholder="000000"
+                className="mt-1 w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-center tracking-[0.5em] text-lg font-semibold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-teal-500"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={authLoading}
+              className="w-full py-3 bg-teal-700 hover:bg-teal-800 text-white font-bold text-sm rounded-xl shadow-md transition-all active:scale-[0.98] cursor-pointer disabled:opacity-50"
+            >
+              {authLoading ? 'Verifying...' : 'Access Admin Area →'}
+            </button>
+            <button
+              type="button"
+              onClick={() => setAuthStep('password')}
+              className="w-full text-xs text-slate-500 hover:text-slate-700 font-semibold cursor-pointer text-center"
+            >
+              ← Back to Password
+            </button>
+          </form>
+        )}
       </div>
     );
   }
@@ -404,7 +482,6 @@ export default function AdminDashboard() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-admin-password': password || 'admin123',
         },
         body: JSON.stringify({ action: 'snapshot' }),
       });
@@ -430,7 +507,6 @@ export default function AdminDashboard() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-admin-password': password || 'admin123',
         },
         body: JSON.stringify({ action: 'regeocode' }),
       });
@@ -464,10 +540,10 @@ export default function AdminDashboard() {
 
         <button
           type="button"
-          onClick={() => setAuthenticated(false)}
+          onClick={handleLogout}
           className="px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors cursor-pointer"
         >
-          Lock Admin Session
+          Logout Session
         </button>
       </div>
 
@@ -509,6 +585,18 @@ export default function AdminDashboard() {
         >
           <Database className="w-3.5 h-3.5" />
           <span>Backup & Map Sync</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setMainSection('security')}
+          className={`px-4 py-2 rounded-lg text-xs font-extrabold transition-all cursor-pointer flex items-center gap-1.5 ${
+            mainSection === 'security'
+              ? 'bg-teal-700 text-white shadow-2xs'
+              : 'text-slate-700 hover:text-slate-900'
+          }`}
+        >
+          <ShieldCheck className="w-3.5 h-3.5" />
+          <span>Security & Settings</span>
         </button>
       </div>
 
@@ -980,7 +1068,7 @@ export default function AdminDashboard() {
                 Download a complete, structured CSV spreadsheet containing all registered optometrists, practice addresses, telephone numbers, emails, and attached clinical specialities for offline backup or manual editing.
               </p>
               <a
-                href={`/api/admin/backup?type=csv&password=${encodeURIComponent(password || 'admin123')}`}
+                href={`/api/admin/backup?type=csv`}
                 download
                 className="inline-flex items-center gap-2 px-4 py-2.5 bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer"
               >
@@ -999,7 +1087,7 @@ export default function AdminDashboard() {
                 Export a full JSON backup file containing all database tables including registered practitioner user accounts, listings, alert subscriptions, and contact messages.
               </p>
               <a
-                href={`/api/admin/backup?type=json&password=${encodeURIComponent(password || 'admin123')}`}
+                href={`/api/admin/backup?type=json`}
                 download
                 className="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-700 hover:bg-indigo-800 text-white font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer"
               >
@@ -1056,6 +1144,93 @@ export default function AdminDashboard() {
               </button>
             </div>
           </div>
+        </div>
+      )}
+      {/* SECTION 4: SECURITY & SETTINGS */}
+      {mainSection === 'security' && (
+        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-6 max-w-lg">
+          <div>
+            <h2 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+              <ShieldCheck className="w-5 h-5 text-teal-600" />
+              <span>Admin Security Settings</span>
+            </h2>
+            <p className="text-xs text-slate-600 mt-1">
+              Update your dual-layered authentication credentials here.
+            </p>
+          </div>
+
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              const np = (e.currentTarget.elements.namedItem('newPassword') as HTMLInputElement).value;
+              const nPin = (e.currentTarget.elements.namedItem('newPin') as HTMLInputElement).value;
+              setAuthLoading(true);
+              setAuthError(null);
+              setBackupMsg(null);
+              try {
+                const res = await fetch('/api/admin/auth/setup', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ newPassword: np, newPin: nPin }),
+                });
+                const data = await res.json();
+                if (res.ok) {
+                  setBackupMsg('Credentials updated successfully!');
+                  (e.target as HTMLFormElement).reset();
+                } else {
+                  setAuthError(data.error || 'Failed to update credentials');
+                }
+              } catch (err) {
+                setAuthError('Network error while updating credentials');
+              } finally {
+                setAuthLoading(false);
+              }
+            }}
+            className="space-y-4"
+          >
+            {authError && (
+              <div className="p-3 bg-red-50 text-red-700 text-xs rounded-xl border border-red-200 font-medium">
+                {authError}
+              </div>
+            )}
+            {backupMsg && (
+              <div className="p-3 bg-emerald-50 text-emerald-800 text-xs rounded-xl border border-emerald-200 font-medium">
+                {backupMsg}
+              </div>
+            )}
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">New Password</label>
+              <input
+                name="newPassword"
+                type="password"
+                required
+                placeholder="Enter new password"
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-hidden focus:ring-2 focus:ring-teal-500"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">New 6-Digit PIN</label>
+              <input
+                name="newPin"
+                type="password"
+                required
+                maxLength={6}
+                pattern="\d{6}"
+                placeholder="000000"
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-hidden focus:ring-2 focus:ring-teal-500 tracking-widest font-mono"
+              />
+              <p className="text-[10px] text-slate-500 mt-1">Must be exactly 6 numeric digits.</p>
+            </div>
+
+            <button
+              type="submit"
+              disabled={authLoading}
+              className="mt-2 w-full py-2.5 bg-teal-700 hover:bg-teal-800 text-white font-bold text-sm rounded-xl shadow-md transition-all active:scale-[0.98] disabled:opacity-50"
+            >
+              {authLoading ? 'Updating...' : 'Update Credentials'}
+            </button>
+          </form>
         </div>
       )}
     </div>

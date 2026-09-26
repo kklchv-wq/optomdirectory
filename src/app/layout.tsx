@@ -4,9 +4,32 @@ import Script from 'next/script';
 import DevEventGuard from '@/components/UI/DevEventGuard';
 import { GA_MEASUREMENT_ID } from '@/lib/gtag';
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.optomdirectory.co.uk';
+
 export const metadata: Metadata = {
-  title: 'Optom Directory',
-  description: 'Find UK optometrists by clinical speciality, equipment, and referral options.',
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: 'Optom Directory | UK Optometrist & Referral Finder',
+    template: '%s | Optom Directory',
+  },
+  description: 'Find UK optometrists by clinical speciality, equipment, and referral options. Search for MECS, CUES, glaucoma specialists, and independent prescribing optometrists.',
+  keywords: ['optometrist', 'optician', 'UK', 'referral', 'MECS', 'CUES', 'glaucoma', 'independent prescribing', 'eye care', 'specialist optometrist'],
+  authors: [{ name: 'Optom Directory' }],
+  creator: 'Optom Directory',
+  publisher: 'Optom Directory',
+  openGraph: {
+    type: 'website',
+    locale: 'en_GB',
+    url: SITE_URL,
+    title: 'Optom Directory | UK Optometrist & Referral Finder',
+    description: 'Find UK optometrists by clinical speciality, equipment, and referral options.',
+    siteName: 'Optom Directory',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Optom Directory | UK Optometrist & Referral Finder',
+    description: 'Find UK optometrists by clinical speciality, equipment, and referral options.',
+  },
 };
 
 export default function RootLayout({
